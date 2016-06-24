@@ -53,12 +53,17 @@
 #include "dsTypes.h"
 #include "dsVideoPortSettings.h"
 
+#ifdef DEVICESETTINGS_DEFAULT_RESOLUTION
+  #define DEFAULT_RESOLUTION DEVICESETTINGS_DEFAULT_RESOLUTION
+#else
+  #define DEFAULT_RESOLUTION "720p"
+#endif
 
 static int m_isInitialized = 0;
 static int m_isPlatInitialized = 0;
 static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
-static std::string _dsHDMIResolution("720p");
-static std::string _dsCompResolution("720p");
+static std::string _dsHDMIResolution(DEFAULT_RESOLUTION);
+static std::string _dsCompResolution(DEFAULT_RESOLUTION);
 static dsHdcpStatus_t _hdcpStatus = dsHDCP_STATUS_UNAUTHENTICATED;
 static bool force_disable_4K = false;
 
@@ -104,7 +109,7 @@ static dsVideoResolution_t getPixelResolution(std::string &resolution);
 IARM_Result_t dsVideoPortMgr_init()
 {
 	
-	std::string _Resolution("720p");
+   std::string _Resolution(DEFAULT_RESOLUTION);
 	
 	try
 	{
@@ -117,10 +122,10 @@ IARM_Result_t dsVideoPortMgr_init()
 		_dsHDMIResolution = device::HostPersistence::getInstance().getProperty("HDMI0.resolution",_Resolution);
 		__TIMESTAMP();printf("The Persistent HDMI resolution read is %s \r\n",_dsHDMIResolution.c_str());
 		#ifdef HAS_ONLY_COMPOSITE
-			_Resolution = "720p";
+           _Resolution = DEFAULT_RESOLUTION;
 			_dsCompResolution = device::HostPersistence::getInstance().getProperty("Baseband0.resolution",_Resolution);
 		#else
-			_Resolution = "720p";
+           _Resolution = DEFAULT_RESOLUTION;
 			_dsCompResolution = device::HostPersistence::getInstance().getProperty("COMPONENT0.resolution",_Resolution);
 		#endif
 		__TIMESTAMP();printf("The Persistent Component/Composite resolution read is %s \r\n",_dsCompResolution.c_str());
@@ -412,7 +417,7 @@ IARM_Result_t _dsGetResolution(void *arg)
 	IARM_BUS_Lock(lock);
 
 	
-	std::string _Resolution("720p");
+   std::string _Resolution(DEFAULT_RESOLUTION);
 	dsVideoPortGetResolutionParam_t *param = (dsVideoPortGetResolutionParam_t *)arg;
 	dsVideoPortResolution_t *resolution = &param->resolution;	
 
