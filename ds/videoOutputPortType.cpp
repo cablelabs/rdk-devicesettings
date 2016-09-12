@@ -32,6 +32,7 @@
 #include "list.hpp"
 #include "dsUtl.h"
 #include "dsError.h"
+#include "dsVideoPort.h"
 #include "illegalArgumentException.hpp"
 #include "videoOutputPortConfig.hpp"
 #include "dslogger.h"
@@ -202,7 +203,15 @@ void VideoOutputPortType::enabledDTCP()
 void VideoOutputPortType::enabledHDCP(bool contentProtect , char *hdcpKey , size_t keySize )
 {
   	dsError_t ret = dsERR_NONE;
-  	ret = dsEnableHDCP(0, contentProtect, hdcpKey, keySize);
+	int handle=0;
+
+	ret = dsGetVideoPort(dsVIDEOPORT_TYPE_HDMI, 0, &handle);
+	if (ret != dsERR_NONE || handle == 0)
+	{
+		throw IllegalArgumentException();
+	}
+
+	ret = dsEnableHDCP(handle, contentProtect, hdcpKey, keySize);
   	if (ret != dsERR_NONE)
   	{
   		throw IllegalArgumentException();
