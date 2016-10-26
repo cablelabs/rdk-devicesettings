@@ -306,11 +306,8 @@ typedef enum _dsVideoResolution_t{
     dsVIDEO_PIXELRES_720x576,     /**< 720x576 Resolution.                         */
     dsVIDEO_PIXELRES_1280x720,    /**< 1280x720 Resolution.                        */
     dsVIDEO_PIXELRES_1920x1080,   /**< 1920x1080 Resolution.                       */
-
-#ifdef ENABLE_4K_RESOLUTION
     dsVIDEO_PIXELRES_3840x2160,   /**< 3840x2160 Resolution.                       */
     dsVIDEO_PIXELRES_4096x2160,   /**< 3840x2160 Resolution.                       */
-#endif
 
     dsVIDEO_PIXELRES_MAX         /**< Maximum index for Video ouptut resolutions. */
 }dsVideoResolution_t;

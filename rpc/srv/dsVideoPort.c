@@ -489,7 +489,7 @@ static int  _dsSendVideoPortPostResolutionCall(dsVideoPortResolution_t *resoluti
 				param.width =  1920;
 				param.height = 1080;
 			break;
-#ifdef ENABLE_4K_RESOLUTION
+
             case dsVIDEO_PIXELRES_3840x2160:
                 param.width =  3840;
                 param.height = 2160;
@@ -498,7 +498,7 @@ static int  _dsSendVideoPortPostResolutionCall(dsVideoPortResolution_t *resoluti
                 param.width =  4096;
                 param.height = 2160;
                 break;
-#endif
+
 			case dsVIDEO_PIXELRES_MAX: //to mute compiler warning
 			default:
 				param.width =  1280;
@@ -540,7 +540,6 @@ static int  _dsVideoPortPreResolutionCall(dsVideoPortResolution_t *resolution)
 				param.width =  1920;
 				param.height = 1080;
 			break;
-#ifdef ENABLE_4K_RESOLUTION
             case dsVIDEO_PIXELRES_3840x2160:
                 param.width =  3840;
                 param.height = 2160;
@@ -549,7 +548,6 @@ static int  _dsVideoPortPreResolutionCall(dsVideoPortResolution_t *resolution)
                 param.width =  4096;
                 param.height = 2160;
                 break;
-#endif
 			case dsVIDEO_PIXELRES_MAX: //to mute compiler warning
 			default:
 				param.width =  1280;
@@ -756,10 +754,8 @@ static  std::string getCompatibleResolution(dsVideoPortResolution_t *SrcResn)
 
          case dsVIDEO_PIXELRES_1280x720:
          case dsVIDEO_PIXELRES_1920x1080:           
-         #ifdef ENABLE_4K_RESOLUTION
-            case dsVIDEO_PIXELRES_3840x2160:
-            case dsVIDEO_PIXELRES_4096x2160:
-         #endif
+         case dsVIDEO_PIXELRES_3840x2160:
+         case dsVIDEO_PIXELRES_4096x2160:
          case dsVIDEO_PIXELRES_MAX: 
          default:
        		  return resolution.assign(kResolutions[kDefaultResIndex].name);

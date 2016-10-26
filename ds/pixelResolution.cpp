@@ -46,12 +46,8 @@ namespace {
 			"720x576",
 			"1280x720",
 			"1920x1080",
-
-#ifdef ENABLE_4K_RESOLUTION
             "3840x2160",
             "4096x2160",
-#endif
-
     };
 
 	inline const bool isValid(int id) {
@@ -67,11 +63,8 @@ const int PixelResolution::k720x480 			= dsVIDEO_PIXELRES_720x480;
 const int PixelResolution::k720x576 			= dsVIDEO_PIXELRES_720x576;
 const int PixelResolution::k1280x720 			= dsVIDEO_PIXELRES_1280x720;
 const int PixelResolution::k1920x1080 			= dsVIDEO_PIXELRES_1920x1080;
-
-#ifdef ENABLE_4K_RESOLUTION
 const int PixelResolution::k3840x2160 			= dsVIDEO_PIXELRES_3840x2160;
 const int PixelResolution::k4096x2160 			= dsVIDEO_PIXELRES_4096x2160;
-#endif
 
 const int PixelResolution::kMax 				= dsVIDEO_PIXELRES_MAX;
 

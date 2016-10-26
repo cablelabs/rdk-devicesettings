@@ -57,10 +57,8 @@ public:
     static const int k1280x720;   //!< Indicates 1280x720 video resolution.
     static const int k1920x1080;  //!< Indicates 1920x1080 video resolution.
 
-#ifdef ENABLE_4K_RESOLUTION
     static const int k3840x2160; //!< Indicates 3840x2160 video resolution.
     static const int k4096x2160; //!< Indicates 4096x2160 video resolution.
-#endif
 
     static const int kMax;      //!< Indicates the maximum number of video resolutions supported.
 

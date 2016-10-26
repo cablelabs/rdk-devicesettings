@@ -448,7 +448,7 @@ static std::string getResolutionStr (dsVideoResolution_t resolution)
             resolutionStr = "1080";
             break;
 
-#ifdef ENABLE_4K_RESOLUTION
+
         case dsVIDEO_PIXELRES_3840x2160:
             resolutionStr = "3840x2160";
             break;
@@ -456,7 +456,6 @@ static std::string getResolutionStr (dsVideoResolution_t resolution)
         case dsVIDEO_PIXELRES_4096x2160:
             resolutionStr = "4096x2160";
             break;
-#endif
 
         default:
             resolutionStr = "unknown";
