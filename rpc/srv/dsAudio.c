@@ -246,23 +246,10 @@ IARM_Result_t _dsGetStereoMode(void *arg)
     else if (param != NULL)
     {
         /* In Auto Mode, get the effective mode */
-        if (_srv_AudioAuto) {
-            dsAudioStereoMode_t stereoMode = dsAUDIO_STEREO_UNKNOWN;
-            dsGetStereoMode(param->handle, &stereoMode);
-            param->mode = stereoMode;
-        }
-        else {
-            dsAudioPortType_t _APortType = _GetAudioPortType(param->handle);
-            if (_APortType == dsAUDIOPORT_TYPE_SPDIF)
-            {
-                param->mode = _srv_SPDIF_Audiomode;
-                printf("The SPDIF Port Audio Settings Mode is %d \r\n",param->mode);
-            }
-            else if (_APortType == dsAUDIOPORT_TYPE_HDMI) {
-                param->mode = _srv_HDMI_Audiomode;
-                printf("The HDMI Port Audio Settings Mode is %d \r\n",param->mode);
-            } 
-        } 
+        dsAudioStereoMode_t stereoMode = dsAUDIO_STEREO_UNKNOWN;
+        dsGetStereoMode(param->handle, &stereoMode);
+        param->mode = stereoMode;
+        printf("The Audio Stereo Mode obtained is %d \r\n",param->mode);
    }
 
     IARM_BUS_Unlock(lock);    
