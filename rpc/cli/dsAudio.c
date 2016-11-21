@@ -212,7 +212,27 @@ dsError_t dsGetAudioDB(int handle, float *db)
 dsError_t dsGetAudioLevel(int handle, float *level)
 {
 	dsError_t ret = dsERR_NONE;
-    ret = dsERR_OPERATION_NOT_SUPPORTED;
+	dsAudioSetVolumeParam_t param;
+
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+	float vol_in = 0.0;
+
+	param.handle = handle;
+	param.volume = 0;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+	                          (char *)IARM_BUS_DSMGR_API_dsGetAudioVolume,
+	                          (void *)&param,
+	                          sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+	  *level = (float)(param.volume * 1.0);
+	}
+	else
+	{
+	  ret = dsERR_GENERAL;
+	}
 	return ret;
 }
 
@@ -401,7 +421,21 @@ dsError_t dsSetAudioDB(int handle, float db)
 dsError_t dsSetAudioLevel(int handle, float level)
 {
 	dsError_t ret = dsERR_NONE;
-	/* This is a empty operation in RNG150 */
+	dsAudioSetVolumeParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+	param.handle = handle;
+	param.volume = (unsigned int)level;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+	                          (char *)IARM_BUS_DSMGR_API_dsSetAudioVolume,
+	                          (void *)&param,
+	                          sizeof(param));
+
+	if (IARM_RESULT_SUCCESS != rpcRet)
+	{
+	  ret = dsERR_GENERAL;
+	}
 	return ret;
 }
 

@@ -66,6 +66,8 @@ IARM_Result_t _dsSetStereoAuto(void *arg);
 IARM_Result_t _dsGetStereoAuto(void *arg);
 IARM_Result_t _dsSetAudioMute(void *arg);
 IARM_Result_t _dsIsAudioMute(void *arg);
+IARM_Result_t _dsSetAudioVolume(void *arg);
+IARM_Result_t _dsGetAudioVolume(void *arg);
 IARM_Result_t _dsAudioPortTerm(void *arg);
 IARM_Result_t _dsGetStereoMode(void *arg);
 IARM_Result_t _dsGetEncoding(void *arg);
@@ -187,6 +189,8 @@ IARM_Result_t _dsAudioPortInit(void *arg)
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetStereoAuto,_dsGetStereoAuto);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioMute,_dsSetAudioMute);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsAudioMute,_dsIsAudioMute);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioVolume, _dsSetAudioVolume);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetAudioVolume, _dsGetAudioVolume);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetEncoding,_dsGetEncoding);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsAudioMSDecode,_dsIsAudioMSDecode);
 
@@ -460,6 +464,45 @@ IARM_Result_t _dsIsAudioMute(void *arg)
     }
 
     IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+
+IARM_Result_t _dsSetAudioVolume(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    float new_volume = 0.0;
+
+    dsAudioSetVolumeParam_t *param = (dsAudioSetVolumeParam_t *)arg;
+    new_volume = (float)(param->volume * 1.0);
+    dsError_t ret = dsSetAudioLevel(param->handle, new_volume);
+
+    __TIMESTAMP();printf("new_volume = %2.2f\r\n", new_volume);
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+
+IARM_Result_t _dsGetAudioVolume(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    float volume = 0.0;
+    dsAudioSetVolumeParam_t *param = (dsAudioSetVolumeParam_t *)arg;
+
+    dsError_t ret = dsGetAudioLevel(param->handle, &volume);
+    if ( ret == dsERR_NONE) {
+        param->volume = (unsigned int)volume;
+    }
+    IARM_BUS_Unlock(lock);
+
+    __TIMESTAMP();printf("param->volume = %d\n", param->volume);
 
     return IARM_RESULT_SUCCESS;
 }

@@ -51,6 +51,8 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetEncoding                 "dsGetEncoding"
 #define  IARM_BUS_DSMGR_API_dsSetAudioMute		"dsSetAudioMute"
 #define  IARM_BUS_DSMGR_API_dsIsAudioMute        "dsIsAudioMute"
+#define  IARM_BUS_DSMGR_API_dsSetAudioVolume     "dsSetAudioVolume"
+#define  IARM_BUS_DSMGR_API_dsGetAudioVolume     "dsGetAudioVolume"
 #define  IARM_BUS_DSMGR_API_dsIsAudioMSDecode    "dsIsAudioMSDecode"
 #define  IARM_BUS_DSMGR_API_dsIsAudioPortEnabled  "dsIsAudioPortEnabled"
 #define  IARM_BUS_DSMGR_API_dsEnableAudioPort      "dsEnableAudioPort"
@@ -182,6 +184,11 @@ typedef struct _dsAudioSetMutedParam_t {
 	int handle;
 	bool mute;
 } dsAudioSetMutedParam_t;
+
+typedef struct _dsAudioSetVolumeParam_t {
+    int handle;
+    unsigned int volume;
+} dsAudioSetVolumeParam_t;
 
 typedef struct _dsAudioGetEncodingModeParam_t {
 	int handle;
