@@ -37,6 +37,7 @@
 #include "dsFPD.h"
 #include "dsRpc.h"
 #include "dsTypes.h"
+#include "dsFPDSettings.h"
 #include "dsserverlogger.h"
 #include "dsMgr.h"
 	
@@ -47,6 +48,7 @@
 #include <iostream>
 #include "hostPersistence.hpp"
 #include <sstream>
+#include <vector>
 
 
 #define direct_list_top(list) ((list))
@@ -77,27 +79,24 @@ IARM_Result_t _dsFPEnableCLockDisplay(void *arg);
 IARM_Result_t _dsGetTimeFormat(void *arg);
 IARM_Result_t _dsSetTimeFormat(void *arg);
 
-/*TBD - Only Text and Power Brigghtness settings for the time being
- * Create an Array of all inidcator and test display
-*/
-static  dsFPDBrightness_t _dsPowerBrightness = dsFPD_BRIGHTNESS_MAX ;
+#ifdef HAS_CLOCK_DISPLAY
 static  dsFPDBrightness_t _dsTextBrightness  = dsFPD_BRIGHTNESS_MAX ;
-static  dsFPDColor_t     _dsPowerLedColor   = dsFPD_COLOR_BLUE;
-static  dsFPDTimeFormat_t _dsTextTimeFormat	= dsFPD_TIME_12_HOUR;
+#endif
 
 /** Structure that defines internal data base for the FP */
 typedef struct _dsFPDSettings_t_
 {   
     dsFPDBrightness_t brightness;
     dsFPDState_t state;
+    dsFPDColor_t color;
 }_FPDSettings_t;
+
+using namespace std;
 
 /** Variable that stores the brightness and State for FP */
 static _FPDSettings_t srvFPDSettings[dsFPD_INDICATOR_MAX];
-
-
-
-using namespace std;
+const std::string default_led_color("White");
+vector<dsFPDColors_t> allColors (arrayAllColors, arrayAllColors + sizeof(arrayAllColors) / sizeof(arrayAllColors[0]) );
 
 std::string numberToString (int number);
 int stringToNumber (std::string text);
@@ -125,82 +124,118 @@ int stringToNumber (std::string text)
 std::string enumToColor (dsFPDColor_t enumColor)
 {
 	std::string color;
-    stringstream convert;
+  stringstream convert;
+  unsigned int i;
 
-    switch (enumColor)
+  for (i=0; i < allColors.size(); i++)
+  {
+    if (allColors[i].color == enumColor)
     {
-		
-		case dsFPD_COLOR_BLUE:
-			color = "BLUE";
-		break;
-		
-		case dsFPD_COLOR_GREEN:
-			color = "GREEN";
-		break;
-
-		case dsFPD_COLOR_RED:
-			color = "RED";
-		break;
-
-		case dsFPD_COLOR_YELLOW:
-			color = "YELLOW";
-		break;
-
-		case dsFPD_COLOR_ORANGE:
-			color = "RED";
-		break;
-
-		default:
-			convert << enumColor;
-			return convert.str();
-	}
-	return color;
+      color = std::string(allColors[i].name);
+      break;
+    }
+  }
+  if (i < allColors.size())
+  {
+    return color;
+  }
+  else
+  {
+    convert << enumColor;
+    return convert.str();
+  }
 }
 
+dsFPDColor_t colorToEnum(std::string &colorName)
+{
+  dsFPDColor_t color = 0;
+  unsigned int i;
+
+  for (i = 0; i < allColors.size(); i++)
+  {
+    if (strcmp(allColors[i].name, colorName.c_str()) == 0)
+    {
+      color = allColors[i].color;
+      break;
+    }
+  }
+  return color;
+}
 
 IARM_Result_t dsFPDMgr_init()
 {
 
-
-	IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsFPInit,_dsFPInit);
-	
 	try
 	{
 		/* Init the Power and Clock Brightness */
 		string value;
 		int maxBrightness = dsFPD_BRIGHTNESS_MAX;	
 
-		value = device::HostPersistence::getInstance().getProperty("Power.brightness", numberToString(maxBrightness));
-		_dsPowerBrightness = stringToNumber(value);
+        for (int i = 0; i < dsFPD_INDICATOR_MAX; i++)
+        {
+            srvFPDSettings[i].brightness = dsFPD_BRIGHTNESS_MAX;
+            srvFPDSettings[i].state = dsFPD_STATE_OFF;
+            srvFPDSettings[i].color = 0;
+        }
 
+		value = device::HostPersistence::getInstance().getProperty("Power.brightness", numberToString(maxBrightness));
+		srvFPDSettings[dsFPD_INDICATOR_POWER].brightness = stringToNumber(value);
+		INFO("Power brightness initialized to        %s percent.\n", value.c_str());
+
+		value = device::HostPersistence::getInstance().getProperty("Network.brightness", numberToString(maxBrightness));
+		srvFPDSettings[dsFPD_INDICATOR_NETWORK].brightness = stringToNumber(value);
+		INFO("Network brightness initialized to      %s percent.\n", value.c_str());
+
+		value = device::HostPersistence::getInstance().getProperty("Wifi.brightness", numberToString(maxBrightness));
+		srvFPDSettings[dsFPD_INDICATOR_WIFI].brightness = stringToNumber(value);
+		INFO("Wifi brightness initialized to         %s percent.\n", value.c_str());
+
+		value = device::HostPersistence::getInstance().getProperty("Power.color", default_led_color);
+		srvFPDSettings[dsFPD_INDICATOR_POWER].color = colorToEnum(value);
+		INFO("Power indicator color initialized to   %s\n", value.c_str());
+
+		value = device::HostPersistence::getInstance().getProperty("Network.color", default_led_color);
+		srvFPDSettings[dsFPD_INDICATOR_NETWORK].color = colorToEnum(value);
+		INFO("Network indicator color initialized to %s\n", value.c_str());
+
+		value = device::HostPersistence::getInstance().getProperty("Wifi.color", default_led_color);
+		srvFPDSettings[dsFPD_INDICATOR_WIFI].color = colorToEnum(value);
+		INFO("Wifi indicator color initialized to    %s\n", value.c_str());
+
+	#ifdef HAS_CLOCK_DISPLAY
 		value = device::HostPersistence::getInstance().getProperty("Text.brightness", numberToString(maxBrightness));
 		_dsTextBrightness = stringToNumber(value);
-		
-		INFO("Power Brightness Read from Persistent is %d \r\n",_dsPowerBrightness);
-		INFO("Text Brightness Read from Persistent is %d \r\n",_dsTextBrightness);
-
-		#ifdef HAS_CLOCK_DISPLAY
-			string _TimeFormat("12_HOUR");
-			/* Get the Time Format from Persistence */
-			_TimeFormat = device::HostPersistence::getInstance().getProperty("Text.timeformat",_TimeFormat);
-			if (_TimeFormat.compare("12_HOUR") == 0)
-			{
-				_dsTextTimeFormat = dsFPD_TIME_12_HOUR;
-				device::HostPersistence::getInstance().persistHostProperty("Text.timeformat","12_HOUR");
-			}
-			else if (_TimeFormat.compare("24_HOUR") == 0)
-			{
-				_dsTextTimeFormat = dsFPD_TIME_24_HOUR;
-				device::HostPersistence::getInstance().persistHostProperty("Text.timeformat","24_HOUR");
-			}
-			INFO("Clock Time Format Read from Persistent is %s \r\n",_TimeFormat.c_str());
-		#endif
-
+		string _TimeFormat("12_HOUR");
+		/* Get the Time Format from Persistence */
+		_TimeFormat = device::HostPersistence::getInstance().getProperty("Text.timeformat",_TimeFormat);
+		if (_TimeFormat.compare("12_HOUR") == 0)
+		{
+			_dsTextTimeFormat = dsFPD_TIME_12_HOUR;
+			device::HostPersistence::getInstance().persistHostProperty("Text.timeformat","12_HOUR");
+		}
+		else if (_TimeFormat.compare("24_HOUR") == 0)
+		{
+			_dsTextTimeFormat = dsFPD_TIME_24_HOUR;
+			device::HostPersistence::getInstance().persistHostProperty("Text.timeformat","24_HOUR");
+		}
+		INFO("Clock Time Format Read from Persistent is %s \r\n",_TimeFormat.c_str());
+	#endif
 	}
 	catch(...)
 	{
 		ERROR("Error in Reading Brightness Value On Startup.. Use Default value \r\n");
 	}
+
+	if (!m_isPlatInitialized) {
+	  dsFPInit();
+	  m_isPlatInitialized = 1;
+	  for(int i=0; i<dsFPD_INDICATOR_MAX; i++)
+	  {
+	    dsSetFPBrightness(i, srvFPDSettings[i].brightness);
+	    dsSetFPColor(i, srvFPDSettings[i].color);
+	  }
+	}
+	IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsFPInit,_dsFPInit);
 
 	return IARM_RESULT_SUCCESS;
 }
@@ -213,6 +248,7 @@ IARM_Result_t dsFPDMgr_term()
 IARM_Result_t _dsFPInit(void *arg)
 {
     IARM_BUS_Lock(lock);
+    int i;
 
 
     if (!m_isInitialized) {
@@ -235,15 +271,6 @@ IARM_Result_t _dsFPInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsFPEnableCLockDisplay,_dsFPEnableCLockDisplay);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetTimeFormat,_dsGetTimeFormat);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetTimeFormat,_dsSetTimeFormat);
-		
-
-		memset (srvFPDSettings, 0, sizeof (srvFPDSettings));
-		
-		for (int i = dsFPD_INDICATOR_MESSAGE; i < dsFPD_INDICATOR_MAX; i++)
-		{
-			srvFPDSettings[i].brightness = dsFPD_BRIGHTNESS_MAX;
-			srvFPDSettings[i].state = dsFPD_STATE_OFF;
-		}
 
         m_isInitialized = 1;
     }
@@ -251,6 +278,11 @@ IARM_Result_t _dsFPInit(void *arg)
     if (!m_isPlatInitialized) {
         dsFPInit();
         m_isPlatInitialized = 1;
+        for(i=0; i<dsFPD_INDICATOR_MAX; i++)
+        {
+          dsSetFPBrightness(i, srvFPDSettings[i].brightness);
+          dsSetFPColor(i, srvFPDSettings[i].color);
+        }
     }
 
     IARM_BUS_Unlock(lock);
@@ -340,16 +372,12 @@ IARM_Result_t _dsGetFPBrightness(void *arg)
     IARM_BUS_Lock(lock);
 
 	dsFPDBrightParam_t *param = (dsFPDBrightParam_t *)arg;
-    //dsGetFPBrightness(param->eIndicator, &param->eBrightness);
 
-	/*
-		* Power LED Indicator Brightness is the Global LED brightness
-		* for all indicators
-	*/
+	if (isIndicatorValid(param->eIndicator))
+	  param->eBrightness = srvFPDSettings[param->eIndicator].brightness;
 
-	param->eBrightness = _dsPowerBrightness;
 
-	INFO("_dsGetFPBrightness Power  Brightness is %d \r\n",param->eBrightness);
+	INFO("_dsGetFPBrightness brightness is %d for indicator %d\n", param->eBrightness, param->eIndicator);
 
 	IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
@@ -360,50 +388,49 @@ IARM_Result_t _dsGetFPBrightness(void *arg)
 
 IARM_Result_t _dsSetFPBrightness(void *arg)
 {
+  dsError_t res = dsERR_NONE;
     _DEBUG_ENTER();
     IARM_BUS_Lock(lock);
 
 	dsFPDBrightParam_t *param = (dsFPDBrightParam_t *)arg;
 
 	
-	if (param->eBrightness <= dsFPD_BRIGHTNESS_MAX)
+	if (isIndicatorValid(param->eIndicator) && param->eBrightness <= dsFPD_BRIGHTNESS_MAX)
     {
-		dsSetFPBrightness(param->eIndicator, param->eBrightness);
+	  res = dsSetFPBrightness(param->eIndicator, param->eBrightness);
+		if (dsERR_NONE != res)
+		{
+		  ERROR("Something went wrong when calling dsSetFPBrightness(), ret=%d\n", res);
+		  IARM_BUS_Unlock(lock);
+		  return IARM_RESULT_SUCCESS;
+		}
 		srvFPDSettings[param->eIndicator].brightness = param->eBrightness;
 
-		try{
-			switch (param->eIndicator)
-			{
-				case dsFPD_INDICATOR_POWER:
-				{	
-					 INFO("_dsSetFPBrightness Power Brightness From  App is %d \r\n",param->eBrightness);
-					
-					if(param->toPersist)
-					{	
-						_dsPowerBrightness =  param->eBrightness;
-						device::HostPersistence::getInstance().persistHostProperty("Power.brightness", numberToString(_dsPowerBrightness));
-					}
-					break;
-				}
-
-				case dsFPD_INDICATOR_MESSAGE:
-				case dsFPD_INDICATOR_RECORD:
-				case dsFPD_INDICATOR_REMOTE:
-				case dsFPD_INDICATOR_RFBYPASS:
-				default:
-				{	
-					break;
-				}
-			}
-		}
-		catch(...)
+		if(param->toPersist)
 		{
-			ERROR("Error in Persisting the Power Brightness Value \r\n");
-		}
+		  try{
+        switch (param->eIndicator)
+        {
+          case dsFPD_INDICATOR_POWER:
+            device::HostPersistence::getInstance().persistHostProperty("Power.brightness", numberToString(srvFPDSettings[param->eIndicator].brightness));
+            break;
+            /* Network and Wifi indicators has always the same brightness because they are on one PWM channel */
+          case dsFPD_INDICATOR_NETWORK:
+          case dsFPD_INDICATOR_WIFI:
+            device::HostPersistence::getInstance().persistHostProperty("Network.brightness", numberToString(srvFPDSettings[param->eIndicator].brightness));
+            device::HostPersistence::getInstance().persistHostProperty("Wifi.brightness", numberToString(srvFPDSettings[param->eIndicator].brightness));
+            break;
+          default:
+            break;
+        }
 
+		  }
+      catch(...)
+      {
+        ERROR("Error in Persisting the Power Brightness Value \r\n");
+      }
+		}
 	}
-	//printf("_dsSetFPBrightness Power Brighnes is %d \r\n",_dsPowerBrightness);
-	//printf("_dsSetFPBrightness Text Brighnes is %d \r\n",_dsTextBrightness);
 
     IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
@@ -478,7 +505,8 @@ IARM_Result_t _dsGetFPColor(void *arg)
     IARM_BUS_Lock(lock);
 
 	dsFPDColorParam_t *param = (dsFPDColorParam_t *)arg;
-	param->eColor = _dsPowerLedColor;
+	if (isIndicatorValid(param->eIndicator))
+	  param->eColor = srvFPDSettings[param->eIndicator].color;
 	IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
 
@@ -490,33 +518,43 @@ IARM_Result_t _dsSetFPColor(void *arg)
     IARM_BUS_Lock(lock);
 
 	dsFPDColorParam_t *param = (dsFPDColorParam_t *)arg;
+	std::string persist_token;
+
+    if (!isIndicatorValid(param->eIndicator))
+    {
+      IARM_BUS_Unlock(lock);
+      return IARM_RESULT_INVALID_PARAM;
+    }
+
     dsSetFPColor(param->eIndicator, param->eColor);
+    srvFPDSettings[param->eIndicator].color = param->eColor;
     INFO("_dsSetFPColor Value  From  App is %d for Indicator %d \r\n",param->eColor,param->eIndicator);
-    try{
-			switch (param->eIndicator)
-			{
-				case dsFPD_INDICATOR_POWER:
-				{	
-					if(param->toPersist)
-					{	
-						device::HostPersistence::getInstance().persistHostProperty("Power.Color",enumToColor(param->eColor));
-					}
-					break;
-				}
-				case dsFPD_INDICATOR_MESSAGE:
-				case dsFPD_INDICATOR_RECORD:
-				case dsFPD_INDICATOR_REMOTE:
-				case dsFPD_INDICATOR_RFBYPASS:
-				default:
-				{	
-					break;
-				}
-			}
-		}
-		catch(...)
-		{
-			ERROR("Error in Persisting the Color  Value \r\n");
-		}
+    if(param->toPersist)
+    {
+      try{
+        switch (param->eIndicator)
+        {
+          case dsFPD_INDICATOR_POWER:
+            persist_token = "Power.color";
+            break;
+
+          case dsFPD_INDICATOR_NETWORK:
+            persist_token = "Network.color";
+            break;
+
+          case dsFPD_INDICATOR_WIFI:
+            persist_token = "Wifi.color";
+            break;
+          default:
+            break;
+        }
+        device::HostPersistence::getInstance().persistHostProperty(persist_token, enumToColor(param->eColor));
+      }
+      catch(...)
+      {
+        ERROR("Error in Persisting the Color  Value \r\n");
+      }
+    }
     IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
 }
@@ -544,26 +582,14 @@ IARM_Result_t _dsSetFPState(void *arg)
 
 	dsFPDStateParam_t *param = (dsFPDStateParam_t *)arg;
 
-	if (param->state == dsFPD_STATE_ON)
-    {
-		/*
-			* Power LED Indicator Brightness is the Global LED brightness
-			* for all indicators
-		*/
-		dsSetFPBrightness(param->eIndicator,_dsPowerBrightness);
-		if(param->eIndicator == dsFPD_INDICATOR_POWER)
-			INFO("_dsSetFPState Setting Power LED to ON with Brightness %d \r\n",_dsPowerBrightness);
-	
-		srvFPDSettings[param->eIndicator].state = param->state;
-	}
-	else if (param->state == dsFPD_STATE_OFF)
-	{
-		dsSetFPBrightness(param->eIndicator,0);
-		if(param->eIndicator == dsFPD_INDICATOR_POWER)
-			INFO("_dsSetFPState Setting Power LED to OFF with Brightness 0 \r\n");
+	if (!isIndicatorValid(param->eIndicator))
+  {
+	  IARM_BUS_Unlock(lock);
+    return IARM_RESULT_INVALID_PARAM;
+  }
 
-		srvFPDSettings[param->eIndicator].state = param->state;
-	}
+	dsSetFPState(param->eIndicator, param->state);
+	srvFPDSettings[param->eIndicator].state = param->state;
 
     IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
@@ -577,9 +603,9 @@ IARM_Result_t _dsGetFPState(void *arg)
 
 	dsFPDStateParam_t *param = (dsFPDStateParam_t *)arg;
 
-	if(param->eIndicator < dsFPD_INDICATOR_MAX)
-    {
-   		param->state = srvFPDSettings[param->eIndicator].state;
+	if (isIndicatorValid(param->eIndicator))
+	{
+	  param->state = srvFPDSettings[param->eIndicator].state;
 	}
 	
     IARM_BUS_Unlock(lock);

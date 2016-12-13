@@ -45,6 +45,8 @@
 #include "dsError.h"
 #include "dsTypes.h"
 
+#include "dsFPDSettings.h"
+
 using namespace std;
 
 std::string numberToString (int number)
@@ -90,11 +92,9 @@ namespace {
 	}
 
 	const char *_indicatorNames[] = {
-			"Message",
 			"Power",
-			"Record",
-			"Remote",
-			"RfByPass",
+			"Network",
+			"Wifi"
 
 	};
 
@@ -118,11 +118,9 @@ const int FrontPanelIndicator::Color::kWhite  = dsFPD_COLOR_WHITE;
 const int FrontPanelIndicator::Color::kMax    = dsFPD_COLOR_MAX;
 
 
-const int FrontPanelIndicator::kMessage       = dsFPD_INDICATOR_MESSAGE;
 const int FrontPanelIndicator::kPower    	  = dsFPD_INDICATOR_POWER;
-const int FrontPanelIndicator::kRecord   	  = dsFPD_INDICATOR_RECORD;
-const int FrontPanelIndicator::kRemote   	  = dsFPD_INDICATOR_REMOTE;
-const int FrontPanelIndicator::kRFBypass 	  = dsFPD_INDICATOR_RFBYPASS;
+const int FrontPanelIndicator::kNetwork   	  = dsFPD_INDICATOR_NETWORK;
+const int FrontPanelIndicator::kWifi   	  = dsFPD_INDICATOR_WIFI;
 const int FrontPanelIndicator::kMax      	  = dsFPD_INDICATOR_MAX;
 
 
@@ -426,7 +424,7 @@ int  FrontPanelIndicator::getColorMode()
  */
 void FrontPanelIndicator::setBlink(const Blink &blink)
 {
-    dsSetFPBlink((dsFPDIndicator_t)_id, blink.getIteration(), blink.getInterval());
+    dsSetFPBlink((dsFPDIndicator_t)_id, blink.getInterval(), blink.getIteration());
     _blink = blink;
 }
 

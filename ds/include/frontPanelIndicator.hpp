@@ -144,11 +144,9 @@ protected:
 
 public:
 
-    static const int kMessage;  //!< Indicates id of meassage LED.
     static const int kPower;    //!< Indicates id of power LED.
-    static const int kRecord;   //!< Indicates id of record LED.
-    static const int kRemote;   //!< Indicates id of remote LED.
-    static const int kRFBypass; //!< Indicates id of RF bypass LED.
+    static const int kNetwork;   //!< Indicates id of network LED.
+    static const int kWifi;   //!< Indicates id of Wifi LED.
     static const int kMax;      //!< Indicates the maximum number of LEDS supported.
 
     int getBrightness();

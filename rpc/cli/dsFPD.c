@@ -36,7 +36,7 @@
 #include "iarmUtil.h"
 #include "libIARM.h"
 #include "libIBus.h"
-
+#include "dsFPDSettings.h"
 
 
 dsError_t dsFPInit (void)

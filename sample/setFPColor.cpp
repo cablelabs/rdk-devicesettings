@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
    
 	
     if (argc != 3) {
-        printf("%s : <Indicator  - Message|Power|Record|Remote|RfByPass> <Color - [Red | Blue | Green | Orange | Yellow ]< Default Blue>>\n", argv[0]);
+      printf("%s : <Indicator  - Power|Network|Wifi> <Color - [Red | Blue | Green | Orange | Yellow | White]< Default Blue>>\n", argv[0]);
         return 0;
     }
    

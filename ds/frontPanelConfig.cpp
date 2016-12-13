@@ -37,7 +37,7 @@
 #include "dsError.h"
 #include "dsUtl.h"
 #include "frontPanelConfig.hpp"
-#include "frontPanelSettings.hpp"
+#include "dsFPDSettings.h"
 #include "illegalArgumentException.hpp"
 #include "dslogger.h"
 
@@ -311,8 +311,8 @@ void FrontPanelConfig::load()
 	 * 2. Create Indicators.
 	 */
 	{
-		for (size_t i = 0; i < dsUTL_DIM(kIndicatorColors); i++) {
-			_colors.push_back(FrontPanelIndicator::Color(kIndicatorColors[i].id));
+		for (size_t i = 0; i < dsUTL_DIM(kPowerIndicatorColors); i++) {
+			_colors.push_back(FrontPanelIndicator::Color(kPowerIndicatorColors[i].id));
 		}
 
 		for (size_t i = 0; i < dsUTL_DIM(kIndicators); i++) {
@@ -332,8 +332,10 @@ void FrontPanelConfig::load()
 		 * 1. Use Supported Colors created for indicators.
 		 * 2. Create Text Displays.
 		 */
-		for (size_t i = 0; i < dsUTL_DIM(kTextDisplays); i++) {
-			_textDisplays.push_back(
+	  if (kTextDisplays != NULL)
+	  {
+      for (size_t i = 0; i < dsUTL_DIM(kTextDisplays); i++) {
+        _textDisplays.push_back(
 					FrontPanelTextDisplay(kTextDisplays[i].id,
 										  kTextDisplays[i].maxBrightness,
 										  kTextDisplays[i].maxCycleRate,
@@ -342,7 +344,8 @@ void FrontPanelConfig::load()
 										  kTextDisplays[i].maxVerticalIterations,
 										  kTextDisplays[i].supportedCharacters,
 										  kTextDisplays[i].colorMode));
-		}
+      }
+	  }
 	}
 }
 

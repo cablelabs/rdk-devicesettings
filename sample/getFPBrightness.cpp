@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
    
 
     if (argc != 2) {
-        printf("%s : <Indicator  - Message|Power|Record|Remote|RfByPass>\n", argv[0]);
+        printf("%s : <Indicator  - Power|Network|Wifi>\n", argv[0]);
         return 0;
     }
     char *pIndicatorName = argv[1];

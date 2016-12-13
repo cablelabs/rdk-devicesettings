@@ -41,7 +41,7 @@
 int main(int argc, char *argv[]) 
 {
    if (argc != 3) {
-        printf("%s : <Indicator  - Message|Power|Record|Remote|RfByPass> <brightness - [0 to 100]>\n", argv[0]);
+     printf("%s : <Indicator  - Power|Network|Wifi> <brightness - [0 to 100]>\n", argv[0]);
         return 0;
     }
    

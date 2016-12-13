@@ -29,6 +29,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <unistd.h>
 #include "frontPanelIndicator.hpp"
 #include "manager.hpp"
 
@@ -41,7 +42,7 @@
 int main(int argc, char *argv[]) 
 {
    if (argc != 3) {
-        printf("%s : <Indicator  - Message|Power|Record|Remote|RfByPass> <State - [0(OFF)|1(ON) ]>\n", argv[0]);
+        printf("%s : <Indicator  - Power|Network|Wifi> <State - [0(OFF)|1(ON) ]>\n", argv[0]);
         return 0;
     }
    
