@@ -396,6 +396,7 @@ IARM_Result_t _dsSetResolution(void *arg)
 		{
 			
 			printf("Same Resolution ..Ignoring Resolution Request------\r\n");
+                        _dsHDMIResolution = platresolution.name;
 			IARM_BUS_Unlock(lock);
 			return IARM_RESULT_SUCCESS;
 		}
