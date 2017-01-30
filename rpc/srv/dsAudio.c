@@ -251,6 +251,10 @@ IARM_Result_t _dsGetStereoMode(void *arg)
         param->mode = stereoMode;
         printf("The Audio Stereo Mode obtained is %d \r\n",param->mode);
    }
+    if(param->mode = dsAUDIO_STEREO_PASSTHRU)
+    {
+        param->mode = dsAUDIO_STEREO_SURROUND;  
+    }
 
     IARM_BUS_Unlock(lock);    
 
