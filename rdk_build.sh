@@ -174,6 +174,8 @@ function build()
         echo "#undef HAS_AUDIO_PASSTHRU" > $DeviceSettings_PATH/hal/include/dsHALConfig.h
     elif [ $RDK_PLATFORM_SOC = "broadcom" ] && [ "$BRCM_RDK_REFSW_PKG" = "13.2" ]; then
         echo "#undef HAS_AUDIO_PASSTHRU" > $DeviceSettings_PATH/hal/include/dsHALConfig.h
+    elif [ $RDK_PLATFORM_SOC = "broadcom" ] && [ $RDK_PLATFORM_DEVICE = "rng150" ]; then
+        echo "#undef HAS_AUDIO_PASSTHRU" > $DeviceSettings_PATH/hal/include/dsHALConfig.h
     else 
         echo "#define HAS_AUDIO_PASSTHRU" > $DeviceSettings_PATH/hal/include/dsHALConfig.h
     fi
