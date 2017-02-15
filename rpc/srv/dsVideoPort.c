@@ -650,7 +650,8 @@ void _dsHdcpCallback (int handle, dsHdcpStatus_t status)
 		case dsHDCP_STATUS_UNAUTHENTICATED:
 		default:
 			__TIMESTAMP();printf("HDCP Event Status from HAL is ...%d\n",status);
-			return;
+			hdcp_eventData.data.hdmi_hdcp.hdcpStatus = _hdcpStatus = status;
+			break;
 	}
 	
 	IARM_Bus_BroadcastEvent(IARM_BUS_DSMGR_NAME,(IARM_EventId_t)IARM_BUS_DSMGR_EVENT_HDCP_STATUS,(void *)&hdcp_eventData, sizeof(hdcp_eventData));
