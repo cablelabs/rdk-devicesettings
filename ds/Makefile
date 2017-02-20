@@ -17,7 +17,7 @@
 # limitations under the License.
 ##########################################################################
 RM          := rm -rf 
-CFLAGS      := -std=c++0x  -g -fPIC -D_REENTRANT -Wall
+CFLAGS      += -std=c++0x  -g -fPIC -D_REENTRANT -Wall
 LIBNAME     := ds
 LIBNAMEFULL := lib$(LIBNAME).so
 LIBNAMECLI := lib$(LIBNAME)-cli.so

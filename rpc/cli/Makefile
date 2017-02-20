@@ -17,7 +17,7 @@
 # limitations under the License.
 ##########################################################################
 RM          := rm -rf 
-CFLAGS      := -g -fPIC -D_REENTRANT -Wall
+CFLAGS      += -g -fPIC -D_REENTRANT -Wall
 LIBNAME     := dshalcli
 LIBNAMEFULL := lib$(LIBNAME).so
 INSTALL     := $(PWD)/install
