@@ -548,6 +548,21 @@ int VideoOutputPort::getHDCPStatus()
     return _hdcpStatus;
 }
 
+int VideoOutputPort::getHDCPVersion()
+{
+    dsHdcpVersion_t hdcpVersion;
+    int _hdcpVersion;
+
+    dsError_t ret = dsGetHDCPVersion(_handle, &hdcpVersion);
+
+    if (ret != dsERR_NONE) {
+        throw Exception(ret);
+    }
+
+    _hdcpVersion = hdcpVersion;
+    return _hdcpVersion;
+}
+
 }
 
 

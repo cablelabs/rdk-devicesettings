@@ -454,6 +454,35 @@ dsError_t dsIsVideoPortActive(int handle, bool *active)
 	return dsERR_GENERAL ;
 }
 
+dsError_t dsGetHDCPVersion(int handle, dsHdcpVersion_t *hdcpversion)
+{
+    _DEBUG_ENTER();
+
+    if (hdcpversion == NULL) {
+        return dsERR_INVALID_PARAM;
+    }
+
+    dsGetHDCPVersion_t param;
+
+    memset(&param, 0, sizeof(param));
+    param.handle = handle;
+    param.result = dsERR_NONE;
+
+    IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+    rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+		    (char *)IARM_BUS_DSMGR_API_dsGetHDCPVersion,
+		    (void *)&param,
+		    sizeof(param));
+
+	if( (IARM_RESULT_SUCCESS == rpcRet) && (dsERR_NONE == param.result))
+	{
+        *hdcpversion = param.hdcpversion;
+		return dsERR_NONE;
+	}
+
+	return dsERR_GENERAL ;
+}
+
 
 /** @} */
 /** @} */

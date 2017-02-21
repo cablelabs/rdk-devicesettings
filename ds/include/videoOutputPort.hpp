@@ -248,6 +248,7 @@ public:
 	void enable();
 	void disable();
 	int getHDCPStatus();
+	int getHDCPVersion();
 
 
 private:

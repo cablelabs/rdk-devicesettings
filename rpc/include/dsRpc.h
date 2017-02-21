@@ -100,6 +100,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsSDR2HDR		 		"dsSDR2HDR"
 #define IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace	"dsGetHDRGfxColorSpace"
 #define IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace	"dsSetHDRGfxColorSpace"
+#define IARM_BUS_DSMGR_API_dsGetHDCPVersion    		"dsGetHDCPVersion"
 
 
 /*
@@ -412,6 +413,13 @@ typedef struct _dsGetHDRCapabilitiesParam_t
     int                     handle;
     int                     capabilities;
 } dsGetHDRCapabilitiesParam_t;
+
+typedef struct _dsGetHDCPVersion
+{
+    int handle;
+    dsError_t result;
+    dsHdcpVersion_t hdcpversion;
+} dsGetHDCPVersion_t;
 
 #ifdef __cplusplus
 }

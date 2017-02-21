@@ -87,6 +87,7 @@ IARM_Result_t _dsIsVideoPortActive(void *arg);
 IARM_Result_t _dsSDR2HDR(void *arg);
 IARM_Result_t _dsGetHDRGfxColorSpace(void *arg);
 IARM_Result_t _dsSetHDRGfxColorSpace(void *arg);
+IARM_Result_t _dsGetHDCPVersion(void *arg);
 
 static dsVideoPortType_t _GetVideoPortType(int handle);
 static int  _dsVideoPortPreResolutionCall(dsVideoPortResolution_t *resolution);
@@ -171,6 +172,7 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSDR2HDR ,_dsSDR2HDR); 
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace ,_dsGetHDRGfxColorSpace); 
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace ,_dsSetHDRGfxColorSpace); 
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPVersion ,_dsGetHDCPVersion);
 
         m_isInitialized = 1;
     }
@@ -856,6 +858,21 @@ static dsVideoResolution_t getPixelResolution(std::string &resolution )
 }
 
 
+IARM_Result_t _dsGetHDCPVersion(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    dsError_t ret = dsERR_NONE;
+
+    dsGetHDCPVersion_t *param = (dsGetHDCPVersion_t *)arg;
+    ret = dsGetHDCPVersion(param->handle, &param->hdcpversion);
+    param->result = ret;
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
 
 /** @} */
 /** @} */
