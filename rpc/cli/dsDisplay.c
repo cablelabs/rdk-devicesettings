@@ -123,6 +123,7 @@ dsError_t dsGetEDID(int handle, dsDisplayEDID_t *edid)
 
     dsDisplayGetEDIDParam_t param;
 
+    memset(&param,0,sizeof(dsDisplayGetEDIDParam_t));
     param.handle = handle;
     
 	

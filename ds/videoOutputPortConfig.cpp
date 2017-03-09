@@ -135,6 +135,7 @@ List<VideoResolution>  VideoOutputPortConfig::getSupportedResolutions()
 {
 	List<VideoResolution> supportedResolutions;
 	int isDynamicList = 0;
+	dsError_t dsError = dsERR_NONE;
 	
 	_supportedResolutions.clear(); /*Clear the Vector */
 
@@ -151,7 +152,12 @@ List<VideoResolution>  VideoOutputPortConfig::getSupportedResolutions()
 
 			edid.numOfSupportedResolution = 0;
 			dsGetDisplay((dsVideoPortType_t)vPort.getType().getId(), vPort.getIndex(), &_handle);
-			dsGetEDID(_handle, &edid);
+			dsError = dsGetEDID(_handle, &edid);
+			if(dsError != dsERR_NONE)
+			{
+				cout <<" dsGetEDID failed so setting edid.numOfSupportedResolution to 0"<< endl;
+				edid.numOfSupportedResolution = 0;
+			}
 	
 			cout <<" EDID Num of Resolution ......."<< edid.numOfSupportedResolution << endl;	
 			for (size_t i = 0; i < edid.numOfSupportedResolution; i++)

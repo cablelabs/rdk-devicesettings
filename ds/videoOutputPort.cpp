@@ -235,10 +235,13 @@ const VideoOutputPort::Display &VideoOutputPort::getDisplay()
 	if (isDisplayConnected()) {
 		dsVideoAspectRatio_t aspect;
 		dsDisplayEDID_t edid;
+		dsError_t dsError = dsERR_NONE;
 		if (_display._handle != 0) {
 			dsGetDisplayAspectRatio(_display._handle, &aspect);
 			_display._aspectRatio = aspect;
-			dsGetEDID(_display._handle, &edid);
+			dsError = dsGetEDID(_display._handle, &edid);
+			if(dsError == dsERR_NONE)
+			{
 			 _display._productCode = edid.productCode;
 			 _display._serialNumber = edid.serialNumber;
 			 _display._manufacturerYear = edid.manufactureYear;
@@ -252,6 +255,11 @@ const VideoOutputPort::Display &VideoOutputPort::getDisplay()
 
 
 			return _display;
+			}
+			else
+			{
+				throw Exception(dsERR_GENERAL);
+			}
 		}
 		else {
 			throw Exception(dsERR_INVALID_PARAM);
