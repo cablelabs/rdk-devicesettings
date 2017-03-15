@@ -258,7 +258,7 @@ const VideoOutputPort::Display &VideoOutputPort::getDisplay()
 			}
 			else
 			{
-				throw Exception(dsERR_GENERAL);
+				printf("VideoOutputPort::Display::dsGetEDID has dsError: %d\r\n", dsError); 
 			}
 		}
 		else {
@@ -483,7 +483,8 @@ bool VideoOutputPort::Display::hasSurround(void) const
     }
 
     if (ret != dsERR_NONE) {
-		throw Exception(ret);
+                surround = false;
+		printf("VideoOutputPort::Display::hasSurround return default value false");
     }
 
     return surround;
