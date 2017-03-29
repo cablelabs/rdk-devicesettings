@@ -175,7 +175,74 @@ dsError_t dsGetHDCPStatus (int handle, dsHdcpStatus_t *status)
     return dsERR_GENERAL ;
 }
 
+dsError_t dsGetHDCPProtocol (int handle, dsHdcpProtocolVersion_t *version)
+{
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(version != NULL, dsERR_INVALID_PARAM);
 
+    dsVideoPortGetHDCPProtocolVersion_t param;
+    param.handle = handle;
+    param.protocolVersion = dsHDCP_VERSION_MAX;
+
+    IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+    rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+					(char *)IARM_BUS_DSMGR_API_dsGetHDCPProtocol,
+					(void *)&param,
+					sizeof(param));
+    if (IARM_RESULT_SUCCESS == rpcRet)
+    {
+     	*version = param.protocolVersion;
+     	return dsERR_NONE;
+    }
+
+    return dsERR_GENERAL ;
+}
+
+dsError_t dsGetHDCPReceiverProtocol (int handle, dsHdcpProtocolVersion_t *version)
+{
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(version != NULL, dsERR_INVALID_PARAM);
+
+    dsVideoPortGetHDCPProtocolVersion_t param;
+    param.handle = handle;
+    param.protocolVersion = dsHDCP_VERSION_MAX;
+
+    IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+    rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+					(char *)IARM_BUS_DSMGR_API_dsGetHDCPReceiverProtocol,
+					(void *)&param,
+					sizeof(param));
+    if (IARM_RESULT_SUCCESS == rpcRet)
+    {
+     	*version = param.protocolVersion;
+     	return dsERR_NONE;
+    }
+
+    return dsERR_GENERAL ;
+}
+
+dsError_t dsGetHDCPCurrentProtocol (int handle, dsHdcpProtocolVersion_t *version)
+{
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(version != NULL, dsERR_INVALID_PARAM);
+
+    dsVideoPortGetHDCPProtocolVersion_t param;
+    param.handle = handle;
+    param.protocolVersion = dsHDCP_VERSION_MAX;
+
+    IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+    rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+					(char *)IARM_BUS_DSMGR_API_dsGetHDCPCurrentProtocol,
+					(void *)&param,
+					sizeof(param));
+    if (IARM_RESULT_SUCCESS == rpcRet)
+    {
+     	*version = param.protocolVersion;
+     	return dsERR_NONE;
+    }
+
+    return dsERR_GENERAL ;
+}
 dsError_t  dsIsDisplayConnected(int handle, bool *connected)
 {
     _DEBUG_ENTER();

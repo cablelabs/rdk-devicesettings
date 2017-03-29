@@ -314,6 +314,38 @@ typedef void (*dsHDCPStatusCallback_t)(int handle, dsHdcpStatus_t status);
  */
 dsError_t dsGetHDCPStatus (int handle, dsHdcpStatus_t *status);
 
+/**
+* @brief Get STB HDCP protocol version
+*
+* @param handle Handle of the display device.
+* @param[in/out] HDCP protocol version
+* @return Device Settings error code
+* @retval dsERR_NONE If sucessfully dsGetHDCPProtocol api has been called.
+* @retval dsERR_GENERAL General failure.
+*/
+dsError_t dsGetHDCPProtocol (int handle,dsHdcpProtocolVersion_t *protocolVersion);
+
+/**
+* @brief Get Receiver/TV HDCP protocol version
+*
+* @param handle Handle of the display device.
+* @param[in/out] HDCP protocol version
+* @return Device Settings error code
+* @retval dsERR_NONE If sucessfully dsGetHDCPProtocol api has been called.
+* @retval dsERR_GENERAL General failure.
+*/
+dsError_t dsGetHDCPReceiverProtocol (int handle,dsHdcpProtocolVersion_t *protocolVersion);
+
+/**
+* @brief Get current used HDCP protocol version
+*
+* @param handle Handle of the display device.
+* @param[in/out] HDCP protocol version
+* @return Device Settings error code
+* @retval dsERR_NONE If sucessfully dsGetHDCPProtocol api has been called.
+* @retval dsERR_GENERAL General failure.
+*/
+dsError_t dsGetHDCPCurrentProtocol (int handle,dsHdcpProtocolVersion_t *protocolVersion);
 
 /**
  * @}

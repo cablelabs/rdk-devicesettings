@@ -557,6 +557,43 @@ int VideoOutputPort::getHDCPStatus()
     return _hdcpStatus;
 }
 
+int VideoOutputPort::getHDCPProtocol()
+{
+    dsHdcpProtocolVersion_t hdcpProtocol;
+    dsError_t ret = dsGetHDCPProtocol(_handle, &hdcpProtocol);
+
+    if (ret != dsERR_NONE) {
+        throw Exception(ret);
+    }
+
+    return hdcpProtocol;
+}
+
+int VideoOutputPort::getHDCPReceiverProtocol()
+{
+    dsHdcpProtocolVersion_t hdcpProtocol;
+
+    dsError_t ret = dsGetHDCPReceiverProtocol(_handle, &hdcpProtocol);
+
+    if (ret != dsERR_NONE) {
+        throw Exception(ret);
+    }
+
+    return hdcpProtocol;
+}
+
+int VideoOutputPort::getHDCPCurrentProtocol()
+{
+    dsHdcpProtocolVersion_t hdcpProtocol;
+
+    dsError_t ret = dsGetHDCPCurrentProtocol(_handle, &hdcpProtocol);
+
+    if (ret != dsERR_NONE) {
+        throw Exception(ret);
+    }
+
+    return hdcpProtocol;
+}
 }
 
 

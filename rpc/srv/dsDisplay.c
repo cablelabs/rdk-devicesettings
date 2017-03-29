@@ -272,7 +272,12 @@ void _dsDisplayEventCallback(int handle, dsDisplayEvent_t event, void *eventData
             _eventId = IARM_BUS_DSMGR_EVENT_RX_SENSE;
             break;    
                 
-		default:
+        case dsDISPLAY_HDCPPROTOCOL_CHANGE:
+             __TIMESTAMP();printf("HDCP Protocol Version Change !!!!!!!! ..\r\n");
+             _eventId = IARM_BUS_DSMGR_EVENT_HDCP_STATUS;
+             break;
+
+        default:
 			printf("Error: Unsupported event in _dsHdmiCallback...\r\n");
 			return;
 			

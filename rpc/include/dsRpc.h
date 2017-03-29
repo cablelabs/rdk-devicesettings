@@ -93,6 +93,9 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsEnableHDCP    		"dsEnableHDCP"
 #define IARM_BUS_DSMGR_API_dsIsHDCPEnabled    		"dsIsHDCPEnabled"
 #define IARM_BUS_DSMGR_API_dsGetHDCPStatus    		"dsGetHDCPStatus"
+#define IARM_BUS_DSMGR_API_dsGetHDCPProtocol	        "dsGetHDCPProtocol"
+#define IARM_BUS_DSMGR_API_dsGetHDCPReceiverProtocol	"dsGetHDCPReceiverProtocol"
+#define IARM_BUS_DSMGR_API_dsGetHDCPCurrentProtocol	"dsGetHDCPCurrentProtocol"
 #define IARM_BUS_DSMGR_API_dsIsVideoPortActive		"dsIsVideoPortActive"
 #define IARM_BUS_DSMGR_API_dsGetHDRCapabilities     "dsGetHDRCapabilities"
 
@@ -202,6 +205,11 @@ typedef struct _dsVideoPortGetHDCPStatus_t {
 	int handle;
 	dsHdcpStatus_t hdcpStatus;
 } dsVideoPortGetHDCPStatus_t;
+
+typedef struct _dsVideoPortGetHDCPProtocolVersion_t {
+	int handle;
+	dsHdcpProtocolVersion_t protocolVersion;
+} dsVideoPortGetHDCPProtocolVersion_t;
 
 
 typedef struct _dsVideoPortIsDisplayConnectedParam_t {

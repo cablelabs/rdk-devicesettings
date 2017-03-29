@@ -103,6 +103,11 @@ typedef struct _DSMgr_EventData_t {
             dsFPDTimeFormat_t  eTimeFormat;   
         }FPDTimeFormat;
 
+        struct _HDCP_PROTOCOL_DATA
+        {
+        	dsHdcpProtocolVersion_t  protocolVersion;
+        }HDCPProtocolVersion;
+
     } data;
 }IARM_Bus_DSMgr_EventData_t;
 

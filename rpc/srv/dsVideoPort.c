@@ -77,6 +77,9 @@ IARM_Result_t _dsVideoPortTerm(void *arg);
 IARM_Result_t _dsEnableHDCP(void *arg);
 IARM_Result_t _dsIsHDCPEnabled(void *arg);
 IARM_Result_t _dsGetHDCPStatus(void *arg);
+IARM_Result_t _dsGetHDCPProtocol(void *arg);
+IARM_Result_t _dsGetHDCPReceiverProtocol(void *arg);
+IARM_Result_t _dsGetHDCPCurrentProtocol(void *arg);
 IARM_Result_t _dsIsVideoPortActive(void *arg);
 
 
@@ -159,6 +162,9 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableHDCP ,_dsEnableHDCP);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsHDCPEnabled,_dsIsHDCPEnabled);
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPStatus ,_dsGetHDCPStatus); 
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPProtocol ,_dsGetHDCPProtocol);
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPReceiverProtocol ,_dsGetHDCPReceiverProtocol);
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPCurrentProtocol ,_dsGetHDCPCurrentProtocol);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsVideoPortActive ,_dsIsVideoPortActive); 
 	
         m_isInitialized = 1;
@@ -614,6 +620,134 @@ IARM_Result_t _dsGetHDCPStatus (void *arg)
     return IARM_RESULT_SUCCESS;
 }
 
+IARM_Result_t _dsGetHDCPProtocol (void *arg)
+{
+#ifndef RDK_DSHAL_NAME
+#warning   "RDK_DSHAL_NAME is not defined"
+#define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t (*dsGetHDCPProtocol_t)(int handle, dsHdcpProtocolVersion_t *protocolVersion);
+    static dsGetHDCPProtocol_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetHDCPProtocol_t) dlsym(dllib, "dsGetHDCPProtocol");
+            if (func) {
+                printf("dsGetHDCPProtocol_t(int, dsHdcpProtocolVersion_t *) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetHDCPProtocol_t(int, dsHdcpProtocolVersion_t *) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+	dsVideoPortGetHDCPProtocolVersion_t *param = (dsVideoPortGetHDCPProtocolVersion_t *)arg;
+
+    if (func != 0) {
+        dsError_t ret = func(param->handle, &param->protocolVersion);
+    }
+    else {
+        param->protocolVersion = dsHDCP_VERSION_1X;
+    }
+
+	IARM_BUS_Unlock(lock);
+
+	return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetHDCPReceiverProtocol (void *arg)
+{
+#ifndef RDK_DSHAL_NAME
+#warning   "RDK_DSHAL_NAME is not defined"
+#define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t (*dsGetHDCPReceiverProtocol_t)(int handle, dsHdcpProtocolVersion_t *protocolVersion);
+    static dsGetHDCPReceiverProtocol_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetHDCPReceiverProtocol_t) dlsym(dllib, "dsGetHDCPReceiverProtocol");
+            if (func) {
+                printf("dsGetHDCPReceiverProtocol_t(int, dsHdcpProtocolVersion_t *) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetHDCPReceiverProtocol_t(int, dsHdcpProtocolVersion_t *) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+	dsVideoPortGetHDCPProtocolVersion_t *param = (dsVideoPortGetHDCPProtocolVersion_t *)arg;
+
+    if (func != 0) {
+        dsError_t ret = func(param->handle, &param->protocolVersion);
+    }
+    else {
+        param->protocolVersion = dsHDCP_VERSION_1X;
+    }
+
+	IARM_BUS_Unlock(lock);
+
+	return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetHDCPCurrentProtocol (void *arg)
+{
+#ifndef RDK_DSHAL_NAME
+#warning   "RDK_DSHAL_NAME is not defined"
+#define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t (*dsGetHDCPCurrentProtocol_t)(int handle, dsHdcpProtocolVersion_t *protocolVersion);
+    static dsGetHDCPCurrentProtocol_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetHDCPCurrentProtocol_t) dlsym(dllib, "dsGetHDCPCurrentProtocol");
+            if (func) {
+                printf("dsGetHDCPCurrentProtocol_t(int, dsHdcpProtocolVersion_t *) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetHDCPCurrentProtocol_t(int, dsHdcpProtocolVersion_t *) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+	dsVideoPortGetHDCPProtocolVersion_t *param = (dsVideoPortGetHDCPProtocolVersion_t *)arg;
+
+    if (func != 0) {
+        dsError_t ret = func(param->handle, &param->protocolVersion);
+    }
+    else {
+        param->protocolVersion = dsHDCP_VERSION_1X;
+    }
+
+	IARM_BUS_Unlock(lock);
+
+	return IARM_RESULT_SUCCESS;
+}
 
 static dsVideoPortType_t _GetVideoPortType(int handle)
 {

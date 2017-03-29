@@ -52,6 +52,7 @@ typedef enum _dsDisplayEvent_t {
     dsDISPLAY_EVENT_DISCONNECTED,          //!< Display disconnected event.
     dsDISPLAY_RXSENSE_ON,			       //!< Rx Sense ON event
     dsDISPLAY_RXSENSE_OFF,			       //!< Rx Sense OFF event
+    dsDISPLAY_HDCPPROTOCOL_CHANGE,		   //!< HDCP Protocol Version Change event
 
     dsDISPLAY_EVENT_MAX
 } dsDisplayEvent_t;

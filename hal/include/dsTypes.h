@@ -255,6 +255,14 @@ typedef enum StereoMode{
  * @}
  */
 
+/* This enumeration defines HDCP protocol version types */
+
+typedef enum _dsHdcpProtocolVersion_t {
+    dsHDCP_VERSION_1X = 0,            /**< HDCP Protocol version 1.x */
+    dsHDCP_VERSION_2X,                /**< HDCP Protocol version 2.x */
+    dsHDCP_VERSION_MAX                /**< Maximum index for HDCP protocol. */
+} dsHdcpProtocolVersion_t;
+
 
 /* This enumeration defines all HDCP Authentication Status */
 
