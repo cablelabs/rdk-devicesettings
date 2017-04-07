@@ -69,15 +69,21 @@ IARM_Result_t _dsIsAudioMute(void *arg);
 IARM_Result_t _dsAudioPortTerm(void *arg);
 IARM_Result_t _dsGetStereoMode(void *arg);
 IARM_Result_t _dsGetEncoding(void *arg);
+IARM_Result_t _dsSetAudioEncoding(void *arg);
 IARM_Result_t _dsIsAudioMSDecode(void *arg);
 IARM_Result_t _dsIsAudioPortEnabled(void *arg);
 IARM_Result_t _dsEnableAudioPort(void *arg);
 
 
+IARM_Result_t _dsGetAudioGain(void *arg);
+IARM_Result_t _dsSetAudioGain(void *arg);
+IARM_Result_t _dsGetAudioDB(void *arg);
+IARM_Result_t _dsSetAudioDB(void *arg);
+IARM_Result_t _dsGetAudioLevel(void *arg);
+IARM_Result_t _dsSetAudioLevel(void *arg);
 
 static void _GetAudioModeFromPersistent(void *arg);
 static dsAudioPortType_t _GetAudioPortType(int handle);
-
 
 IARM_Result_t dsAudioMgr_init()
 {
@@ -99,7 +105,7 @@ IARM_Result_t dsAudioMgr_init()
 		{
 			_srv_HDMI_Audiomode = dsAUDIO_STEREO_PASSTHRU;
 		}
-                else 
+                else
                 {
 			_srv_HDMI_Audiomode = dsAUDIO_STEREO_STEREO;
                 }
@@ -110,28 +116,28 @@ IARM_Result_t dsAudioMgr_init()
             std::string _AudioModeAuto("FALSE");
 
             #if 0
-               /* 
+               /*
                 Commenting this to fix the persistent settings
-                Audio mode should not be forced to Auto 
-                To enabale this we need to change the DS Mgr implementation 
+                Audio mode should not be forced to Auto
+                To enabale this we need to change the DS Mgr implementation
                 which reads the _dsGetStereoMode to  know the persistent value...*/
-                if (_srv_HDMI_Audiomode == dsAUDIO_STEREO_SURROUND) 
+                if (_srv_HDMI_Audiomode == dsAUDIO_STEREO_SURROUND)
                 {
                     _AudioModeAuto = "TRUE";
                 }
             #endif
-          
+
 	    _AudioModeAuto = device::HostPersistence::getInstance().getProperty("HDMI0.AudioMode.AUTO",_AudioModeAuto);
 	    if (_AudioModeAuto.compare("TRUE") == 0)
 	    {
 	        _srv_AudioAuto = 1;
 	    }
-        else 
+        else
         {
 			_srv_AudioAuto = 0;
         }
 		__TIMESTAMP();printf("The HDMI Audio Auto Setting on startup  is %s \r\n",_AudioModeAuto.c_str());
-		
+
 		/* Get the AudioModesettings for SPDIF from Persistence */
 		std::string _SPDIFModeSettings("STEREO");
 		_SPDIFModeSettings = device::HostPersistence::getInstance().getProperty("SPDIF0.AudioMode",_SPDIFModeSettings);
@@ -148,12 +154,12 @@ IARM_Result_t dsAudioMgr_init()
 		{
 			_srv_SPDIF_Audiomode = dsAUDIO_STEREO_PASSTHRU;
 		}
-        else 
+        else
         {
 			_srv_SPDIF_Audiomode = dsAUDIO_STEREO_STEREO;
         }
 	}
-	catch(...) 
+	catch(...)
 	{
 		printf("Exception in Getting the Audio  settings on Startup..... \r\n");
 	}
@@ -188,11 +194,18 @@ IARM_Result_t _dsAudioPortInit(void *arg)
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioMute,_dsSetAudioMute);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsAudioMute,_dsIsAudioMute);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetEncoding,_dsGetEncoding);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioEncoding,_dsSetAudioEncoding);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsAudioMSDecode,_dsIsAudioMSDecode);
 
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsAudioPortEnabled,_dsIsAudioPortEnabled);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableAudioPort,_dsEnableAudioPort);
 
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetAudioGain,_dsGetAudioGain);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioGain,_dsSetAudioGain);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetAudioDB,_dsGetAudioDB);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioDB,_dsSetAudioDB);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetAudioLevel,_dsGetAudioLevel);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioLevel,_dsSetAudioLevel);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsAudioPortTerm,_dsAudioPortTerm);
 
         m_isInitialized = 1;
@@ -252,7 +265,7 @@ IARM_Result_t _dsGetStereoMode(void *arg)
         printf("The Audio Stereo Mode obtained is %d \r\n",param->mode);
    }
 
-    IARM_BUS_Unlock(lock);    
+    IARM_BUS_Unlock(lock);
 
     return IARM_RESULT_SUCCESS;
 }
@@ -307,14 +320,14 @@ IARM_Result_t _dsSetStereoMode(void *arg)
                 {
                     if (param->toPersist)
                     device::HostPersistence::getInstance().persistHostProperty("HDMI0.AudioMode","STEREO");
-                
+
                     _srv_HDMI_Audiomode = dsAUDIO_STEREO_STEREO;
                 }
                 else if (_APortType == dsAUDIOPORT_TYPE_SPDIF)
                 {
                     if (param->toPersist)
                     device::HostPersistence::getInstance().persistHostProperty("SPDIF0.AudioMode","STEREO");
-                
+
                     _srv_SPDIF_Audiomode = dsAUDIO_STEREO_STEREO;
                 }
                 eventData.data.Audioport.mode = dsAUDIO_STEREO_STEREO;
@@ -330,7 +343,7 @@ IARM_Result_t _dsSetStereoMode(void *arg)
                 {
                     if (param->toPersist)
                     device::HostPersistence::getInstance().persistHostProperty("HDMI0.AudioMode","SURROUND");
-                
+
                     _srv_HDMI_Audiomode = dsAUDIO_STEREO_SURROUND;
                 }
                 else if (_APortType == dsAUDIOPORT_TYPE_SPDIF)
@@ -453,7 +466,7 @@ IARM_Result_t _dsIsAudioMute(void *arg)
 
     dsAudioSetMutedParam_t *param = (dsAudioSetMutedParam_t *)arg;
     bool muted = false;
-    
+
     dsError_t ret = dsIsAudioMute(param->handle, &muted);
     if (ret == dsERR_NONE) {
         param->mute = muted;
@@ -473,7 +486,7 @@ IARM_Result_t _dsIsAudioPortEnabled(void *arg)
 
     dsAudioPortEnabledParam_t *param = (dsAudioPortEnabledParam_t *)arg;
     bool enabled = false;
-    
+
     dsError_t ret = dsIsAudioPortEnabled(param->handle, &enabled);
     if (ret == dsERR_NONE) {
         param->enabled = enabled;
@@ -489,15 +502,110 @@ IARM_Result_t _dsEnableAudioPort(void *arg)
 {
     _DEBUG_ENTER();
     IARM_BUS_Lock(lock);
-   
+
     dsAudioPortEnabledParam_t *param = (dsAudioPortEnabledParam_t *)arg;
     dsEnableAudioPort(param->handle, param->enabled);
-   
+
     IARM_BUS_Unlock(lock);
-    
+
     return IARM_RESULT_SUCCESS;
 }
 
+IARM_Result_t _dsGetAudioGain(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    dsAudioGainParam_t *param = (dsAudioGainParam_t *)arg;
+    float gain = 0.0;
+
+    dsError_t ret = dsGetAudioGain(param->handle, &gain);
+    if (ret == dsERR_NONE) {
+        param->value = gain;
+    }
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetAudioGain(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    dsAudioGainParam_t *param = (dsAudioGainParam_t *)arg;
+    dsSetAudioGain(param->handle, param->value);
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetAudioDB(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    dsAudioDBParam_t *param = (dsAudioDBParam_t *)arg;
+    float db = 0.0;
+
+    dsError_t ret = dsGetAudioDB(param->handle, &db);
+    if (ret == dsERR_NONE) {
+        param->value = db;
+    }
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetAudioDB(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    dsAudioDBParam_t *param = (dsAudioDBParam_t *)arg;
+    dsSetAudioDB(param->handle, param->value);
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetAudioLevel(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    dsAudioLevelParam_t *param = (dsAudioLevelParam_t *)arg;
+    float level = 0.0;
+
+    dsError_t ret = dsGetAudioLevel(param->handle, &level);
+    if (ret == dsERR_NONE) {
+        param->value = level;
+    }
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetAudioLevel(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    dsAudioLevelParam_t *param = (dsAudioLevelParam_t *)arg;
+    dsSetAudioLevel(param->handle, param->value);
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
+}
 
 
 IARM_Result_t _dsAudioPortTerm(void *arg)
@@ -535,11 +643,27 @@ IARM_Result_t _dsGetEncoding(void *arg)
 
 
      __TIMESTAMP();printf("param->encoding = %d\r\n",_encoding);
-    
+
     }
 
     IARM_BUS_Unlock(lock);
 
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetAudioEncoding(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    dsAudioSetEncodingModeParam_t *param = (dsAudioSetEncodingModeParam_t *)arg;
+    if (param != NULL)
+    {
+        dsSetAudioEncoding(param->handle, param->encoding);
+        __TIMESTAMP();printf("param->encoding = %d\r\n", param->encoding);
+    }
+    IARM_BUS_Unlock(lock);
     return IARM_RESULT_SUCCESS;
 }
 
@@ -549,7 +673,7 @@ static dsAudioPortType_t _GetAudioPortType(int handle)
     int halhandle = 0;
 
     numPorts = dsUTL_DIM(kSupportedPortTypes);
-    
+
     for(i=0; i< numPorts; i++)
     {
         dsGetAudioPort(kPorts[i].id.type, kPorts[i].id.index, &halhandle);
@@ -575,7 +699,7 @@ IARM_Result_t _dsIsAudioMSDecode(void *arg)
     _DEBUG_ENTER();
 
     IARM_BUS_Lock(lock);
-    
+
     typedef dsError_t  (*dsIsAudioMSDecode_t)(int handle, bool *HasMS11Decode);
     static dsIsAudioMSDecode_t func = NULL;
     if (func == NULL) {
@@ -584,16 +708,16 @@ IARM_Result_t _dsIsAudioMSDecode(void *arg)
             func = (dsIsAudioMSDecode_t) dlsym(dllib, "dsIsAudioMSDecode");
             if (func) {
                 __TIMESTAMP();printf("dsIsAudioMSDecode(int, bool*) is defined and loaded\r\n");
-            }   
+            }
             else {
                 __TIMESTAMP();printf("dsIsAudioMSDecode(int, bool*) is not defined\r\n");
-            }   
+            }
             dlclose(dllib);
-        }   
+        }
         else {
             __TIMESTAMP();printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
-        }   
-    }   
+        }
+    }
 
     dsAudioGetMS11Param_t *param = (dsAudioGetMS11Param_t *)arg;
     if (func != NULL) {
@@ -624,7 +748,7 @@ static void _GetAudioModeFromPersistent(void *arg)
         std::string _AudioModeSettings("STEREO");
 
         if (_APortType == dsAUDIOPORT_TYPE_SPDIF)
-        {   
+        {
            _AudioModeSettings = device::HostPersistence::getInstance().getProperty("SPDIF0.AudioMode",_AudioModeSettings);
            __TIMESTAMP();printf("The SPDIF Audio Mode Setting From Persistent is %s \r\n",_AudioModeSettings.c_str());
         }
@@ -645,14 +769,13 @@ static void _GetAudioModeFromPersistent(void *arg)
         {
             param->mode = dsAUDIO_STEREO_PASSTHRU;
         }
-        else 
+        else
         {
             param->mode = dsAUDIO_STEREO_STEREO;
-        } 
+        }
     }
 }
 
 
 /** @} */
 /** @} */
-
