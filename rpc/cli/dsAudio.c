@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
- 
+
 
 
 /**
@@ -44,14 +44,14 @@
 dsError_t dsAudioPortInit()
 {
     IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
-	
+
 	printf("<<<<< AOP is initialized in Multi-App Mode >>>>>>>>\r\n");
 
    	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
                             (char *)IARM_BUS_DSMGR_API_dsAudioPortInit,
                             NULL,
                             0);
-  
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		return dsERR_NONE;
@@ -64,7 +64,7 @@ dsError_t dsGetAudioPort(dsAudioPortType_t type, int index, int *handle)
 {
      dsAudioGetHandleParam_t param;
 	  IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
-	
+
 	_DEBUG_ENTER();
     _RETURN_IF_ERROR(dsAudioType_isValid(type), dsERR_INVALID_PARAM);
     _RETURN_IF_ERROR((handle) != NULL, dsERR_INVALID_PARAM);
@@ -77,14 +77,14 @@ dsError_t dsGetAudioPort(dsAudioPortType_t type, int index, int *handle)
                             (char *)IARM_BUS_DSMGR_API_dsGetAudioPort,
                             (void *)&param,
                             sizeof(param));
-	
+
 
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*handle = param.handle;
 		return dsERR_NONE;
 	}
- 
+
    return dsERR_GENERAL ;
 }
 
@@ -137,7 +137,7 @@ dsError_t dsGetStereoMode(int handle, dsAudioStereoMode_t *stereoMode)
                             (char *)IARM_BUS_DSMGR_API_dsGetStereoMode,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*stereoMode = param.mode;
@@ -162,7 +162,7 @@ dsError_t dsGetPersistedStereoMode(int handle, dsAudioStereoMode_t *stereoMode)
                             (char *)IARM_BUS_DSMGR_API_dsGetStereoMode,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*stereoMode = param.mode;
@@ -185,7 +185,7 @@ dsError_t dsGetStereoAuto(int handle, int *autoMode)
                             (char *)IARM_BUS_DSMGR_API_dsGetStereoAuto,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*autoMode = param.autoMode;
@@ -197,23 +197,71 @@ dsError_t dsGetStereoAuto(int handle, int *autoMode)
 
 dsError_t dsGetAudioGain(int handle, float *gain)
 {
-	dsError_t ret = dsERR_NONE;
-    ret = dsERR_OPERATION_NOT_SUPPORTED;
-	return ret;
+    dsError_t ret = dsERR_NONE;
+	dsAudioGainParam_t param;
+
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = 0.0; /* Default to 0 */
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsGetAudioGain,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+    {
+        *gain = param.value;
+    }
+
+	return dsERR_NONE;
 }
 
 dsError_t dsGetAudioDB(int handle, float *db)
 {
-	dsError_t ret = dsERR_NONE;
-    ret = dsERR_OPERATION_NOT_SUPPORTED;
-	return ret;
+    dsError_t ret = dsERR_NONE;
+	dsAudioGainParam_t param;
+
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = 0.0; /* Default to 0 */
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsGetAudioDB,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+    {
+		*db = param.value;
+    }
+
+	return dsERR_NONE;
 }
 
 dsError_t dsGetAudioLevel(int handle, float *level)
 {
-	dsError_t ret = dsERR_NONE;
-    ret = dsERR_OPERATION_NOT_SUPPORTED;
-	return ret;
+    dsError_t ret = dsERR_NONE;
+	dsAudioGainParam_t param;
+
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = 0.0; /* Default to 0 */
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsGetAudioLevel,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*level = param.value;
+	}
+
+	return dsERR_NONE;
 }
 
 dsError_t dsGetAudioMaxDB(int handle, float *maxDb)
@@ -257,7 +305,7 @@ dsError_t dsIsAudioMute(int handle, bool *muted)
                             (char *)IARM_BUS_DSMGR_API_dsIsAudioMute,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*muted = param.mute;
@@ -279,7 +327,7 @@ dsError_t dsIsAudioPortEnabled(int handle, bool *enabled)
                             (char *)IARM_BUS_DSMGR_API_dsIsAudioPortEnabled,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*enabled = param.enabled;
@@ -316,9 +364,26 @@ dsError_t  dsEnableAudioPort(int handle, bool enabled)
 
 dsError_t dsSetAudioEncoding(int handle, dsAudioEncoding_t encoding)
 {
-	dsError_t ret = dsERR_NONE;
-	/* This is a empty operation in RNG150 */
-	return ret;
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(dsAudioEncoding_isValid(encoding), dsERR_INVALID_PARAM);
+
+	dsAudioSetEncodingModeParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.encoding = encoding;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsSetAudioEncoding,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		return dsERR_NONE;
+	}
+
+    return dsERR_GENERAL;
 }
 
 dsError_t dsSetAudioCompression(int handle, dsAudioCompression_t compression)
@@ -341,18 +406,18 @@ dsError_t dsSetStereoMode(int handle, dsAudioStereoMode_t mode,bool IsPersist)
     param.mode = mode;
     param.rpcResult = dsERR_NONE;
 	param.toPersist = IsPersist;
-	  
+
 	IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
                  (char *)IARM_BUS_DSMGR_API_dsSetStereoMode,
                  (void *)&param,
                  sizeof(param));
-	
+
 
 	if (dsERR_NONE == param.rpcResult)
 	{
 		return dsERR_NONE;
 	}
- 
+
    return dsERR_GENERAL ;
 }
 
@@ -367,42 +432,90 @@ dsError_t dsSetStereoAuto(int handle, int autoMode)
     param.autoMode = autoMode;
 
 
-  
+
 	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
                             (char *)IARM_BUS_DSMGR_API_dsSetStereoAuto,
                             (void *)&param,
                             sizeof(param));
-	
+
 
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		return dsERR_NONE;
 	}
- 
+
    return dsERR_GENERAL ;
 }
 
 dsError_t dsSetAudioGain(int handle, float gain)
 {
-	dsError_t ret = dsERR_NONE;
-	/* This is a empty operation in RNG150 */
-	return ret;
+    _DEBUG_ENTER();
+
+	dsAudioGainParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = gain;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsSetAudioGain,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		return dsERR_NONE;
+	}
+
+    return dsERR_GENERAL;
 }
 
 
 dsError_t dsSetAudioDB(int handle, float db)
 {
-	dsError_t ret = dsERR_NONE;
-	/* This is a empty operation in RNG150 */
-	return ret;
+    _DEBUG_ENTER();
+
+	dsAudioDBParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = db;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsSetAudioDB,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		return dsERR_NONE;
+	}
+
+    return dsERR_GENERAL;
 }
 
 
 dsError_t dsSetAudioLevel(int handle, float level)
 {
-	dsError_t ret = dsERR_NONE;
-	/* This is a empty operation in RNG150 */
-	return ret;
+    _DEBUG_ENTER();
+
+	dsAudioLevelParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+    param.handle = handle;
+    param.value = level;
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsSetAudioLevel,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		return dsERR_NONE;
+	}
+
+    return dsERR_GENERAL;
 }
 
 dsError_t dsEnableLoopThru(int handle, bool loopThru)
@@ -414,9 +527,9 @@ dsError_t dsEnableLoopThru(int handle, bool loopThru)
 
 dsError_t dsSetAudioMute(int handle, bool mute)
 {
-   
+
 	_DEBUG_ENTER();
- 
+
 	dsAudioSetMutedParam_t param;
 	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
 
@@ -429,7 +542,7 @@ dsError_t dsSetAudioMute(int handle, bool mute)
                             (char *)IARM_BUS_DSMGR_API_dsSetAudioMute,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		return dsERR_NONE;
@@ -447,7 +560,7 @@ dsError_t dsAudioPortTerm(void)
                             (char *)IARM_BUS_DSMGR_API_dsAudioPortTerm,
                             NULL,
                             0);
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		return dsERR_NONE;
@@ -467,7 +580,7 @@ dsError_t dsIsAudioMSDecode(int handle, bool *HasMS11Decode)
                             (char *)IARM_BUS_DSMGR_API_dsIsAudioMSDecode,
                             (void *)&param,
                             sizeof(param));
-	
+
 	if (IARM_RESULT_SUCCESS == rpcRet)
 	{
 		*HasMS11Decode = param.ms11Enabled;

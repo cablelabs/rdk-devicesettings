@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
- 
+
 
 
 /**
@@ -40,7 +40,7 @@ extern "C" {
 
 
 /*
- * Declare RPC dsAudio API names 
+ * Declare RPC dsAudio API names
  */
 #define  IARM_BUS_DSMGR_API_dsAudioPortInit 	"dsAudioPortInit"
 #define  IARM_BUS_DSMGR_API_dsGetAudioPort		"dsGetAudioPort"
@@ -49,16 +49,24 @@ extern "C" {
 #define  IARM_BUS_DSMGR_API_dsSetStereoAuto		"dsSetStereoAuto"
 #define  IARM_BUS_DSMGR_API_dsGetStereoAuto		"dsGetStereoAuto"
 #define IARM_BUS_DSMGR_API_dsGetEncoding                 "dsGetEncoding"
+#define  IARM_BUS_DSMGR_API_dsSetAudioEncoding		"dsSetAudioEncoding"
 #define  IARM_BUS_DSMGR_API_dsSetAudioMute		"dsSetAudioMute"
 #define  IARM_BUS_DSMGR_API_dsIsAudioMute        "dsIsAudioMute"
 #define  IARM_BUS_DSMGR_API_dsIsAudioMSDecode    "dsIsAudioMSDecode"
 #define  IARM_BUS_DSMGR_API_dsIsAudioPortEnabled  "dsIsAudioPortEnabled"
 #define  IARM_BUS_DSMGR_API_dsEnableAudioPort      "dsEnableAudioPort"
 #define  IARM_BUS_DSMGR_API_dsAudioPortTerm		"dsAudioPortTerm"
+#define  IARM_BUS_DSMGR_API_dsGetAudioGain		"dsGetAudioGain"
+#define  IARM_BUS_DSMGR_API_dsSetAudioGain		"dsSetAudioGain"
+#define  IARM_BUS_DSMGR_API_dsGetAudioDB		"dsGetAudioDB"
+#define  IARM_BUS_DSMGR_API_dsSetAudioDB		"dsSetAudioDB"
+#define  IARM_BUS_DSMGR_API_dsGetAudioLevel		"dsGetAudioLevel"
+#define  IARM_BUS_DSMGR_API_dsSetAudioLevel		"dsSetAudioLevel"
+
 
 
 /*
- * Declare RPC dsDisplay API names 
+ * Declare RPC dsDisplay API names
  */
 #define IARM_BUS_DSMGR_API_dsDisplayInit				"dsDisplayInit"
 #define IARM_BUS_DSMGR_API_dsGetDisplay					"dsGetDisplay"
@@ -69,7 +77,7 @@ extern "C" {
 
 
 /*
- * Declare RPC dsVideo Device API names 
+ * Declare RPC dsVideo Device API names
  */
 #define IARM_BUS_DSMGR_API_dsVideoDeviceInit		"dsVideoDeviceInit"
 #define IARM_BUS_DSMGR_API_dsGetVideoDevice			"dsGetVideoDevice"
@@ -78,7 +86,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsVideoDeviceTerm		"dsVideoDeviceTerm"
 
 /*
- * Declare RPC dsVideo Port API names 
+ * Declare RPC dsVideo Port API names
  */
 
 #define IARM_BUS_DSMGR_API_dsVideoPortInit			 "dsVideoPortInit"
@@ -100,7 +108,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetHDRCapabilities     "dsGetHDRCapabilities"
 
 /*
- * Declare RPC FP  API names 
+ * Declare RPC FP  API names
  */
 
 #define IARM_BUS_DSMGR_API_dsFPInit				"dsFPInit"
@@ -115,15 +123,15 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsSetFPState			 "dsSetFPState"
 #define IARM_BUS_DSMGR_API_dsSetFPColor			 "dsSetFPColor"
 #define IARM_BUS_DSMGR_API_dsGetFPColor			  "dsGetFPColor"
-#define IARM_BUS_DSMGR_API_dsGetFPTextBrightness "dsGetFPTextBrightness" 
-#define IARM_BUS_DSMGR_API_dsSetFPTextBrightness "dsSetFPTextBrightness" 
+#define IARM_BUS_DSMGR_API_dsGetFPTextBrightness "dsGetFPTextBrightness"
+#define IARM_BUS_DSMGR_API_dsSetFPTextBrightness "dsSetFPTextBrightness"
 #define IARM_BUS_DSMGR_API_dsFPEnableCLockDisplay "dsFPEnableCLockDisplay"
 #define IARM_BUS_DSMGR_API_dsGetTimeFormat         "dsGetTimeFormat"
 #define IARM_BUS_DSMGR_API_dsSetTimeFormat          "dsSetTimeFormat"
 
 
 /*
- * Declare RPC HDMI API names 
+ * Declare RPC HDMI API names
  */
 #define IARM_BUS_DSMGR_API_dsHdmiInInit                 "dsHdmiInInit"
 #define IARM_BUS_DSMGR_API_dsHdmiInTerm                 "dsHdmiInTerm"
@@ -137,7 +145,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsHdmiInGetCurrentVideoMode  "dsHdmiInGetCurrentVideoMode"
 
 /*
- * Declare RPC Host Interface  API names 
+ * Declare RPC Host Interface  API names
  */
 
 #define IARM_BUS_DSMGR_API_dsHostInit				"dsHostInit"
@@ -175,13 +183,17 @@ typedef struct _dsAudioSetMutedParam_t {
 typedef struct _dsAudioGetEncodingModeParam_t {
 	int handle;
 	dsAudioEncoding_t encoding;
-} dsAudioGetEncodingModeParam_t;
+} dsAudioGetEncodingModeParam_t, dsAudioSetEncodingModeParam_t;
 
 typedef struct _dsAudioGetMS11Param_t {
     int handle;
     bool ms11Enabled;
 } dsAudioGetMS11Param_t;
 
+typedef struct _dsAudioValueParam_t {
+    int handle;
+    float value;
+} dsAudioGainParam_t, dsAudioDBParam_t, dsAudioLevelParam_t;
 
 typedef struct _dsVideoPortGetHandleParam_t {
 	dsVideoPortType_t type;
@@ -325,7 +337,7 @@ typedef struct _dsFPDColorParam
     bool toPersist;
 }dsFPDColorParam_t;
 
-typedef struct _dsEnableHDCPParam 
+typedef struct _dsEnableHDCPParam
 {
     int handle;
     bool contentProtect;
@@ -354,7 +366,7 @@ typedef struct _dsVideoRect
     int32_t x;
     int32_t y;
     int32_t width;
-    int32_t height;      
+    int32_t height;
 } dsVideoRect_t;
 
 typedef struct _dsHdmiInGetNumberOfInputsParam_t
