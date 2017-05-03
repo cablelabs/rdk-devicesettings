@@ -241,13 +241,16 @@ IARM_Result_t _dsIsHDCPEnabled(void *arg)
     
     dsVideoPortIsHDCPEnabledParam_t *param = (dsVideoPortIsHDCPEnabledParam_t *)arg;
     dsIsHDCPEnabled(param->handle, &param->enabled);
-   
+
+#if 0
     if(param->enabled){
     	__TIMESTAMP();printf("isHDCP =true !!!!!!..\r\n");
 	}
     else{
     	__TIMESTAMP();printf("isHDCP =false !!!!!!..\r\n");
-    }	
+    }
+#endif
+
     IARM_BUS_Unlock(lock);
 	
     return IARM_RESULT_SUCCESS;
