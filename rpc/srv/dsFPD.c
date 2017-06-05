@@ -546,6 +546,16 @@ IARM_Result_t _dsSetFPState(void *arg)
 
 	if (param->state == dsFPD_STATE_ON)
     {
+
+	    FILE *fd  = fopen ("/tmp/testDeepSleep", "r");
+            if(fd)
+            {
+		INFO("_dsSetFPState caling dsFPInit() \r\n");
+		dsFPInit();
+	        fclose (fd);
+	        remove("/tmp/testDeepSleep");
+            }
+
 		/*
 			* Power LED Indicator Brightness is the Global LED brightness
 			* for all indicators
@@ -563,6 +573,15 @@ IARM_Result_t _dsSetFPState(void *arg)
 			INFO("_dsSetFPState Setting Power LED to OFF with Brightness 0 \r\n");
 
 		srvFPDSettings[param->eIndicator].state = param->state;
+	    FILE *fd  = fopen ("/tmp/testDeepSleep", "r");
+            if(fd)
+            {
+		INFO("_dsSetFPState caling dsFPTerm() \r\n");
+		dsFPTerm();
+	        fclose (fd);
+	        remove("/tmp/testDeepSleep");
+            }
+
 	}
 
     IARM_BUS_Unlock(lock);
