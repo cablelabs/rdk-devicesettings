@@ -79,6 +79,11 @@ public:
 	List<FrontPanelIndicator> 		 getIndicators();
 	List<FrontPanelTextDisplay> 	 getTextDisplays();
 
+        /* Initialize Front Panel */
+        void fPInit();
+        /* Terminate Front Panel */
+        void fPTerm();
+
 };
 
 }

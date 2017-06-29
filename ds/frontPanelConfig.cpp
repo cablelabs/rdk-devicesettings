@@ -111,6 +111,28 @@ FrontPanelIndicator &FrontPanelConfig::getIndicator(const string &name)
 	throw IllegalArgumentException();
 }
 
+/**
+ * @fn FrontPanelConfig::fPInit()
+ * @brief This API is used to Initialize front panel.
+ *
+ * @return None
+ */
+void FrontPanelConfig::fPInit()
+{
+	dsFPInit();
+}
+
+
+/**
+ * @fn FrontPanelConfig::fPTerm()
+ * @brief This API is used to terminate front panel.
+ *
+ * @return None
+ */
+void FrontPanelConfig::fPTerm()
+{
+	dsFPTerm();
+}
 
 /**
  * @fn FrontPanelConfig::getIndicator(int id)
