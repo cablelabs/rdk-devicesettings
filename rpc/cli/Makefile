@@ -37,7 +37,7 @@ all: install
 
 library: $(OBJS)
 	@echo "Building $(LIBNAMEFULL) ...."
-	$(CXX) $(OBJS) $(CFLAGS) -shared -o $(LIBNAMEFULL)
+	$(CXX) $(OBJS) $(CFLAGS) -shared -o $(LIBNAMEFULL) $(LDFLAGS)
 
 %.o: %.cpp
 	@echo "Building $@ ...."
