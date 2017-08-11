@@ -251,6 +251,8 @@ public:
 	int getHDCPProtocol();
 	int getHDCPReceiverProtocol();
 	int getHDCPCurrentProtocol();
+	void getTVHDRCapabilities(int *capabilities) const;
+	void getSupportedTvResolutions(int *resolutions) const;
 
 
 private:

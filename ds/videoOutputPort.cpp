@@ -594,6 +594,29 @@ int VideoOutputPort::getHDCPCurrentProtocol()
 
     return hdcpProtocol;
 }
+
+/**
+ * @fn  const void VideoOutputPort::getTVHDRCapabilities(int *capabilities) const
+ * @brief This API is used to get HDR format supported by TV.
+ *
+ * @return HDR capabilities supported by TV
+ */
+void VideoOutputPort::getTVHDRCapabilities(int *capabilities) const
+{
+    dsGetTVHDRCapabilities(_handle, capabilities);
+}
+
+/**
+ * @fn  const void VideoOutputPort::getSupportedTvResolutions(int *resolutions) const
+ * @brief This API is used to get TV supported Video Resolutions.
+ *
+ * @return Resolutions supported by TV
+ */
+void VideoOutputPort::getSupportedTvResolutions(int *resolutions) const
+{
+    dsSupportedTvResolutions(_handle,resolutions);
+}
+
 }
 
 

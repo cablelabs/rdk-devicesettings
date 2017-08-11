@@ -348,6 +348,28 @@ dsError_t dsGetHDCPReceiverProtocol (int handle,dsHdcpProtocolVersion_t *protoco
 dsError_t dsGetHDCPCurrentProtocol (int handle,dsHdcpProtocolVersion_t *protocolVersion);
 
 /**
+ * @brief To find the HDR capabilities of TV
+ *
+ * This function is used to get the HDR capabilities supported by the TV.
+ *
+ * @param [in] handle   Handle for the video device (video decoder)
+ * @param [out] *capabilities OR-ed value of supported HDR standards.
+ * @return dsError_t Error code.
+ */
+dsError_t dsGetTVHDRCapabilities(int handle, int *capabilities);
+
+/**
+ * @brief To find the TV supported resolutions.
+ *
+ * This function is used to get the TV supported resolutions.
+ *
+ * @param [in] handle   Handle for the video device (video decoder)
+ * @param [out] *resolution OR-ed value supported by TV.
+ * @return dsError_t Error code.
+ */
+dsError_t dsSupportedTvResolutions(int handle, int *resolutions);
+
+/**
  * @}
  */
 

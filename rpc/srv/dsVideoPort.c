@@ -81,6 +81,8 @@ IARM_Result_t _dsGetHDCPProtocol(void *arg);
 IARM_Result_t _dsGetHDCPReceiverProtocol(void *arg);
 IARM_Result_t _dsGetHDCPCurrentProtocol(void *arg);
 IARM_Result_t _dsIsVideoPortActive(void *arg);
+IARM_Result_t _dsGetTVHDRCapabilities(void *arg);
+IARM_Result_t _dsSupportedTvResolutions(void *arg);
 
 
 static dsVideoPortType_t _GetVideoPortType(int handle);
@@ -166,6 +168,8 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPReceiverProtocol ,_dsGetHDCPReceiverProtocol);
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPCurrentProtocol ,_dsGetHDCPCurrentProtocol);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsVideoPortActive ,_dsIsVideoPortActive); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetTVHDRCapabilities,_dsGetTVHDRCapabilities);
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedTVResolution,_dsSupportedTvResolutions);
 	
         m_isInitialized = 1;
     }
@@ -751,6 +755,79 @@ IARM_Result_t _dsGetHDCPCurrentProtocol (void *arg)
 
 	return IARM_RESULT_SUCCESS;
 }
+
+IARM_Result_t _dsGetTVHDRCapabilities(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t (*dsGetTVHDRCapabilitiesFunc_t)(int handle, int *capabilities);
+    static dsGetTVHDRCapabilitiesFunc_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetTVHDRCapabilitiesFunc_t)dlsym(dllib, "dsGetTVHDRCapabilities");
+            if (func) {
+                printf("dsGetTVHDRCapabilities() is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetTVHDRCapabilities() is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+    dsGetHDRCapabilitiesParam_t *param = (dsGetHDRCapabilitiesParam_t *)arg;
+    if(0 != func) {
+        param->result = func(param->handle, &param->capabilities);
+    }
+    else {
+        param->capabilities = dsHDRSTANDARD_NONE;
+    }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSupportedTvResolutions(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t (*dsSupportedTvResolutionsFunc_t)(int handle,int *resolutions);
+    static dsSupportedTvResolutionsFunc_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsSupportedTvResolutionsFunc_t)dlsym(dllib, "dsSupportedTvResolutions");
+            if (func) {
+                printf("dsSupportedTvResolutions() is defined and loaded\r\n");
+            }
+            else {
+                printf("dsSupportedTvResolutions() is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+    dsSupportedResolutionParam_t *param = (dsSupportedResolutionParam_t *)arg;
+    if(0 != func) {
+        param->result = func(param->handle, &param->resolutions);
+    }
+    else {
+        param->resolutions = 0;
+    }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
 
 static dsVideoPortType_t _GetVideoPortType(int handle)
 {

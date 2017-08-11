@@ -466,6 +466,49 @@ dsError_t dsIsVideoPortActive(int handle, bool *active)
 	return dsERR_GENERAL ;
 }
 
+dsError_t dsGetTVHDRCapabilities(int handle, int *capabilities)
+{
+	_DEBUG_ENTER();
+
+	dsGetHDRCapabilitiesParam_t param;
+	memset(&param, 0, sizeof(param));
+	param.handle = handle;
+
+	IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsGetTVHDRCapabilities,
+			(void *) &param,
+			sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*capabilities = param.capabilities;
+		return param.result;
+	}
+
+	return dsERR_GENERAL ;
+}
+
+dsError_t dsSupportedTvResolutions(int handle, int *resolutions)
+{
+	_DEBUG_ENTER();
+
+	dsSupportedResolutionParam_t param;
+	memset(&param, 0, sizeof(param));
+	param.handle = handle;
+
+	IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsGetSupportedTVResolution,
+			(void *) &param,
+			sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*resolutions = param.resolutions;
+		return param.result;
+	}
+
+	return dsERR_GENERAL ;
+}
 
 /** @} */
 /** @} */

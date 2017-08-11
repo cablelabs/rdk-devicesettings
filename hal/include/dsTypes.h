@@ -321,6 +321,21 @@ typedef enum _dsVideoResolution_t{
 }dsVideoResolution_t;
 
 /**
+ * This enumeration defines all of the standard TV supported resolution with interlace information.
+ */
+typedef enum _dsTVResolution_t{
+    dsTV_RESOLUTION_480i = 0x0001,      /**< 480i Resolution.                         */
+    dsTV_RESOLUTION_480p = 0x0002,      /**< 480p Resolution.                         */
+    dsTV_RESOLUTION_576i = 0x0004,      /**< 576p Resolution.                         */
+    dsTV_RESOLUTION_576p = 0x0008,      /**< 576p Resolution.                         */
+    dsTV_RESOLUTION_720p = 0x0010,      /**< 720p Resolution.                         */
+    dsTV_RESOLUTION_1080i = 0x0020,      /**< 1080i Resolution.                         */
+    dsTV_RESOLUTION_1080p = 0x0040,      /**< 1080p Resolution.                         */
+    dsTV_RESOLUTION_2160p30 = 0x0080,      /**< 2160p30 Resolution.                         */
+    dsTV_RESOLUTION_2160p60 = 0x0100,      /**< 2160p60 Resolution.                         */
+}dsTVResolution_t;
+
+/**
  * Video ouptut resolutions type validation check.
  */
 #define dsVideoPortPixelResolution_isValid(t)  (((t) >= dsVIDEO_PIXELRES_720x480 ) && ((t) < dsVIDEO_PIXELRES_MAX))
@@ -510,6 +525,7 @@ typedef enum _dsHDRStandard_t {
     dsHDRSTANDARD_HDR10 = 0x01,
     dsHDRSTANDARD_HLG = 0x02,
     dsHDRSTANDARD_DolbyVersion = 0x04,
+    dsHDRSTANDARD_TechnicolorPrime = 0x08,
 } dsHDRStandard_t;
 
 /**

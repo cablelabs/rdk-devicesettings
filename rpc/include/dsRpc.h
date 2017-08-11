@@ -106,6 +106,8 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetHDCPCurrentProtocol	"dsGetHDCPCurrentProtocol"
 #define IARM_BUS_DSMGR_API_dsIsVideoPortActive		"dsIsVideoPortActive"
 #define IARM_BUS_DSMGR_API_dsGetHDRCapabilities     "dsGetHDRCapabilities"
+#define IARM_BUS_DSMGR_API_dsGetTVHDRCapabilities     "dsGetTVHDRCapabilities"
+#define IARM_BUS_DSMGR_API_dsGetSupportedTVResolution     "dsGetSupportedTVResolution"
 
 /*
  * Declare RPC FP  API names
@@ -274,6 +276,12 @@ typedef struct _dsDisplayGetEDIDParam_t {
 	int handle;
     dsDisplayEDID_t edid;
 } dsDisplayGetEDIDParam_t;
+
+typedef struct _dsSupportedResolutionParam_t {
+    dsError_t result;
+    int       handle;
+    int       resolutions;
+}dsSupportedResolutionParam_t;
 
 typedef struct _dsDisplayGetEDIDBytesParam_t {
     int result;
