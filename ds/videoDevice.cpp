@@ -33,11 +33,13 @@
 #include "illegalArgumentException.hpp"
 #include "exception.hpp"
 #include "videoDeviceConfig.hpp"
+#include "dsVideoResolutionSettings.h"
 #include "host.hpp"
 
 #include "dslogger.h"
 #include "dsError.h"
 #include "dsTypes.h"
+#include "dsUtl.h"
 #include <iostream>
 #include <sstream>
 
@@ -248,6 +250,28 @@ void VideoDevice::addDFC(const VideoDFC &dfc)
 void VideoDevice::getHDRCapabilities(int *capabilities)
 {
     dsGetHDRCapabilities(_handle, capabilities);
+}
+
+const List<VideoResolution> VideoDevice::getSettopSupportedResolutions() const
+{
+	List<VideoResolution> supportedResolutions;
+
+	size_t numResolutions = dsUTL_DIM(kResolutions);
+	for (size_t i = 0; i < numResolutions; i++)
+	{
+		dsVideoPortResolution_t *resolution = &kResolutions[i];
+		supportedResolutions.push_back(
+				VideoResolution(
+				i, /* id */
+				std::string(resolution->name),
+				resolution->pixelResolution,
+				resolution->aspectRatio,
+				resolution->stereoScopicMode,
+				resolution->frameRate,
+				resolution->interlaced));
+	}
+
+	return supportedResolutions;
 }
 
 }
