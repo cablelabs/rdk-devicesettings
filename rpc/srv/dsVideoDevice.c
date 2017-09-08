@@ -175,6 +175,19 @@ IARM_Result_t _dsSetDFC(void *arg)
 				device::HostPersistence::getInstance().persistHostProperty("VideoDevice.DFC","Full");
 
 			}
+			else if(param->dfc == dsVIDEO_ZOOM_16_9_ZOOM)
+			{
+				printf("\n Call Zoom setting dsVIDEO_ZOOM_16_9_ZOOM\n");
+				dsSetDFC(param->handle,param->dfc);
+				eventData.data.dfc.zoomsettings =  dsVIDEO_ZOOM_FULL;
+				srv_dfc = param->dfc;
+				IARM_Bus_BroadcastEvent(IARM_BUS_DSMGR_NAME,(IARM_EventId_t)IARM_BUS_DSMGR_EVENT_ZOOM_SETTINGS,(void *)&eventData, sizeof(eventData));
+				device::HostPersistence::getInstance().persistHostProperty("VideoDevice.DFC","Full");
+			}
+			else
+			{
+				printf("\n ERROR: unsupported Zoom setting %d\n", param->dfc);
+			}
 
 #ifdef HAS_HDMI_IN_SUPPORT
             dsHdmiInSelectZoomMode(srv_dfc);
