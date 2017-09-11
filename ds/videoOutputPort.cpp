@@ -254,12 +254,12 @@ const VideoOutputPort::Display &VideoOutputPort::getDisplay()
 			_display._physicalAddressD = edid.physicalAddressD;
 
 
-			return _display;
 			}
 			else
 			{
 				printf("VideoOutputPort::Display::dsGetEDID has dsError: %d\r\n", dsError); 
 			}
+			return _display;
 		}
 		else {
 			throw Exception(dsERR_INVALID_PARAM);
