@@ -68,6 +68,7 @@ namespace {
 			"HDMI",
 			"HDMIInput",
 			"Internal",
+			"SCART",
 	};
 
 	inline const bool isValid(int id) {
@@ -88,6 +89,7 @@ const int VideoOutputPortType::kDVI 		= dsVIDEOPORT_TYPE_DVI;
 const int VideoOutputPortType::kComponent 	= dsVIDEOPORT_TYPE_COMPONENT;
 const int VideoOutputPortType::kHDMI 		= dsVIDEOPORT_TYPE_HDMI;
 const int VideoOutputPortType::kInternal 	= dsVIDEOPORT_TYPE_INTERNAL;
+const int VideoOutputPortType::kScart 	= dsVIDEOPORT_TYPE_SCART;
 const int VideoOutputPortType::kMax 		= dsVIDEOPORT_TYPE_MAX;
 
 

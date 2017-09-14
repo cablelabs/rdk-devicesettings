@@ -278,6 +278,7 @@ typedef enum _dsVideoPortType_t {
     dsVIDEOPORT_TYPE_HDMI,        /**< HDMI video output.                                   */
     dsVIDEOPORT_TYPE_HDMI_INPUT,  /**< HDMI video input.                                    */
     dsVIDEOPORT_TYPE_INTERNAL,    /**< Internal (integrated/internal display) video output. */
+    dsVIDEOPORT_TYPE_SCART,       /**< SCART video output.                                  */
     dsVIDEOPORT_TYPE_MAX          /**< Maximum index for video port types.                  */
 } dsVideoPortType_t;
 

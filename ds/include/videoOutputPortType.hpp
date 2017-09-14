@@ -75,6 +75,7 @@ public:
 	static const int kComponent;
 	static const int kHDMI;
 	static const int kInternal;
+	static const int kScart;
 	static const int kMax;
 
 
