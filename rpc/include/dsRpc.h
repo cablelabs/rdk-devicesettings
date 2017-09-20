@@ -101,6 +101,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace	"dsGetHDRGfxColorSpace"
 #define IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace	"dsSetHDRGfxColorSpace"
 #define IARM_BUS_DSMGR_API_dsGetHDCPVersion    		"dsGetHDCPVersion"
+#define IARM_BUS_DSMGR_API_dsSetScartParameter    "dsSetScartParameter"
 
 
 /*
@@ -420,6 +421,16 @@ typedef struct _dsGetHDCPVersion
     dsError_t result;
     dsHdcpVersion_t hdcpversion;
 } dsGetHDCPVersion_t;
+
+#define DSSCART_PARAM_LEN_MAX 1024
+#define DSSCART_VALUE_LEN_MAX 1024
+
+typedef struct _dsScartParamParam_t {
+    int result;
+    int handle;
+    char param_bytes[DSSCART_PARAM_LEN_MAX];
+    char value_bytes[DSSCART_VALUE_LEN_MAX];
+} dsScartParamParam_t;
 
 #ifdef __cplusplus
 }

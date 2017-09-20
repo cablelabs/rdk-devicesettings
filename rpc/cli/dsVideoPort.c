@@ -484,6 +484,34 @@ dsError_t dsGetHDCPVersion(int handle, dsHdcpVersion_t *hdcpversion)
 	return dsERR_GENERAL ;
 }
 
+dsError_t dsSetScartParameter(int handle, const char* parameter_str, const char* value_str)
+{
+  _DEBUG_ENTER();
+  if ((value_str==NULL) || (parameter_str==NULL)) {
+      return dsERR_INVALID_PARAM;
+  }
+
+  dsScartParamParam_t param;
+
+  memset(&param, 0, sizeof(param));
+  param.handle = handle;
+  param.result = dsERR_NONE;
+  strncpy(param.param_bytes, parameter_str, DSSCART_PARAM_LEN_MAX -1);
+  strncpy(param.value_bytes, value_str, DSSCART_VALUE_LEN_MAX - 1);
+  IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+  rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                          (char *)IARM_BUS_DSMGR_API_dsSetScartParameter,
+                          (void *)&param,
+                          sizeof(param));
+
+  if( (IARM_RESULT_SUCCESS == rpcRet) && (dsERR_NONE == param.result))
+  {
+      return dsERR_NONE;
+  }
+
+	return dsERR_GENERAL;
+}
+
 
 /** @} */
 /** @} */

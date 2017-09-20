@@ -249,7 +249,7 @@ public:
 	void disable();
 	int getHDCPStatus();
 	int getHDCPVersion();
-
+	bool setScartParameter(const std::string parameter, const std::string value);
 
 private:
 	Display _display;
