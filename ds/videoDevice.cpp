@@ -252,26 +252,16 @@ void VideoDevice::getHDRCapabilities(int *capabilities)
     dsGetHDRCapabilities(_handle, capabilities);
 }
 
-const List<VideoResolution> VideoDevice::getSettopSupportedResolutions() const
+void VideoDevice::getSettopSupportedResolutions(std::list<std::string>& stbSupportedResoltuions)
 {
-	List<VideoResolution> supportedResolutions;
-
 	size_t numResolutions = dsUTL_DIM(kResolutions);
 	for (size_t i = 0; i < numResolutions; i++)
 	{
 		dsVideoPortResolution_t *resolution = &kResolutions[i];
-		supportedResolutions.push_back(
-				VideoResolution(
-				i, /* id */
-				std::string(resolution->name),
-				resolution->pixelResolution,
-				resolution->aspectRatio,
-				resolution->stereoScopicMode,
-				resolution->frameRate,
-				resolution->interlaced));
+		stbSupportedResoltuions.push_back(std::string(resolution->name));
 	}
 
-	return supportedResolutions;
+	return;
 }
 
 }

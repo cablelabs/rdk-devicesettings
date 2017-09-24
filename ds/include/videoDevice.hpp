@@ -35,6 +35,7 @@
 #include "videoResolution.hpp"
 #include "list.hpp"
 #include <string>
+#include <list>
 
 
 /**
@@ -71,7 +72,7 @@ public:
 	void addDFC(const VideoDFC &dfc);
 	virtual ~VideoDevice();
 	void getHDRCapabilities(int *capabilities);
-	const List<VideoResolution>  getSettopSupportedResolutions() const;
+        void getSettopSupportedResolutions(std::list<std::string>& stbSupportedResoltuions);
 };
 
 }
