@@ -264,6 +264,26 @@ void VideoDevice::getSettopSupportedResolutions(std::list<std::string>& stbSuppo
 	return;
 }
 
+unsigned int VideoDevice::getSupportedVideoCodingFormats() const
+{
+	unsigned int formats = 0;
+	if(dsERR_NONE != dsGetSupportedVideoCodingFormats(_handle, &formats))
+	{
+		return 0;
+	}
+	else
+	{
+		return formats;
+	}
+}
+
+dsVideoCodecInfo_t VideoDevice::getVideoCodecInfo(dsVideoCodingFormat_t format) const
+{
+	dsVideoCodecInfo_t info = {0};
+	dsGetVideoCodecInfo(_handle, format, &info);
+	return info;
+}
+
 }
 
 

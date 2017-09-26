@@ -108,6 +108,8 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetHDRCapabilities     "dsGetHDRCapabilities"
 #define IARM_BUS_DSMGR_API_dsGetTVHDRCapabilities     "dsGetTVHDRCapabilities"
 #define IARM_BUS_DSMGR_API_dsGetSupportedTVResolution     "dsGetSupportedTVResolution"
+#define IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats "dsGetSupportedVideoCodingFormats"
+#define IARM_BUS_DSMGR_API_dsGetVideoCodecInfo "dsGetVideoCodecInfo"
 
 /*
  * Declare RPC FP  API names
@@ -420,6 +422,20 @@ typedef struct _dsGetHDRCapabilitiesParam_t
     int                     capabilities;
 } dsGetHDRCapabilitiesParam_t;
 
+typedef struct
+{
+    dsError_t result;
+	int handle;
+    unsigned int supported_formats;
+} dsGetSupportedVideoCodingFormatsParam_t;
+
+typedef struct
+{
+    dsError_t result;
+	int handle;
+    dsVideoCodingFormat_t format;
+    dsVideoCodecInfo_t info;
+} dsGetVideoCodecInfoParam_t;
 #ifdef __cplusplus
 }
 #endif

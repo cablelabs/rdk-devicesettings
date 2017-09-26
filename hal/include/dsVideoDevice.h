@@ -119,6 +119,9 @@ dsError_t  dsVideoDeviceTerm();
  */
 dsError_t dsGetHDRCapabilities(int handle, int *capabilities);
 
+dsError_t dsGetSupportedVideoCodingFormats(int handle, unsigned int * supported_formats);
+dsError_t dsGetVideoCodecInfo(int handle, dsVideoCodingFormat_t codec, dsVideoCodecInfo_t * info); 
+
 /* End of DSHAL_VIDEODEVICE_API doxygen group */
 /**
  * @}

@@ -64,6 +64,8 @@ IARM_Result_t _dsSetDFC(void *arg);
 IARM_Result_t _dsGetDFC(void *arg);
 IARM_Result_t _dsVideoDeviceTerm(void *arg);
 IARM_Result_t _dsGetHDRCapabilities(void *arg);
+IARM_Result_t _dsGetSupportedVideoCodingFormats(void *arg);
+IARM_Result_t _dsGetVideoCodecInfo(void *arg);
 
 IARM_Result_t dsVideoDeviceMgr_init()
 {
@@ -113,6 +115,8 @@ IARM_Result_t _dsVideoDeviceInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetDFC,_dsGetDFC);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsVideoDeviceTerm,_dsVideoDeviceTerm);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDRCapabilities,_dsGetHDRCapabilities); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats, _dsGetSupportedVideoCodingFormats); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetVideoCodecInfo, _dsGetVideoCodecInfo); 
         m_isInitialized = 1;
     }
 
@@ -262,6 +266,78 @@ IARM_Result_t _dsGetHDRCapabilities(void *arg)
     }
     else {
         param->capabilities = dsHDRSTANDARD_NONE;
+    }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetSupportedVideoCodingFormats(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    
+    typedef dsError_t (*dsGetSupportedVideoCodingFormatsFunc_t)(int handle, unsigned int *supported_formats);
+    static dsGetSupportedVideoCodingFormatsFunc_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetSupportedVideoCodingFormatsFunc_t)dlsym(dllib, "dsGetSupportedVideoCodingFormats");
+            if (func) {
+                printf("dsGetSupportedVideoCodingFormats() is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetSupportedVideoCodingFormats() is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+    dsGetSupportedVideoCodingFormatsParam_t *param = (dsGetSupportedVideoCodingFormatsParam_t *)arg;
+    if(0 != func) {
+        param->result = func(param->handle, &param->supported_formats);
+    }
+    else {
+        param->supported_formats = 0x0; //Safe default: no formats supported.
+    }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetVideoCodecInfo(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    
+    typedef dsError_t (*dsGetVideoCodecInfoFunc_t)(int handle, dsVideoCodingFormat_t codec, dsVideoCodecInfo_t * info);
+    static dsGetVideoCodecInfoFunc_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetVideoCodecInfoFunc_t)dlsym(dllib, "dsGetVideoCodecInfo");
+            if (func) {
+                printf("dsGetVideoCodecInfo() is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetVideoCodecInfo() is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+    dsGetVideoCodecInfoParam_t *param = (dsGetVideoCodecInfoParam_t *)arg;
+    if(0 != func) {
+        param->result = func(param->handle, param->format, &param->info);
+    }
+    else {
+        param->result = dsERR_OPERATION_NOT_SUPPORTED;
     }
 
     IARM_BUS_Unlock(lock);

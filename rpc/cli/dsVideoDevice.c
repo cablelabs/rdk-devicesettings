@@ -177,5 +177,47 @@ dsError_t dsGetHDRCapabilities(int handle, int *capabilities)
 
 	return dsERR_GENERAL ;
 }
+
+dsError_t dsGetSupportedVideoCodingFormats(int handle, unsigned int * supported_formats)
+{
+    _DEBUG_ENTER();
+
+    dsGetSupportedVideoCodingFormatsParam_t param;
+    param.handle = handle;
+	
+    IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats,
+			(void *) &param,
+			sizeof(param));
+	
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*supported_formats = param.supported_formats;
+		return param.result;
+	}
+    return dsERR_GENERAL;
+}
+
+dsError_t dsGetVideoCodecInfo(int handle, dsVideoCodingFormat_t format, dsVideoCodecInfo_t* info)
+{
+    _DEBUG_ENTER();
+
+    dsGetVideoCodecInfoParam_t param;
+    param.handle = handle;
+    param.format = format;
+    info->num_entries = 0;
+	
+    IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsGetVideoCodecInfo,
+			(void *) &param,
+			sizeof(param));
+	
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*info = param.info;
+        return param.result;
+	}
+    return dsERR_GENERAL;
+}
 /** @} */
 /** @} */

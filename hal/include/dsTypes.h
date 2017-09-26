@@ -743,7 +743,35 @@ typedef struct _dsHdmiInStatus_t
 /**
  * @}
  */
- 
+
+/* List of video compression formats that may be supported by the decoder. */
+typedef enum
+{
+    dsVIDEO_CODEC_MPEGHPART2 = (0x01 << 0), //Also known HEVC, H.265
+    dsVIDEO_CODEC_MPEG4PART10 = (0x01 << 1), //Also known as H.264, MPEG4 AVC
+    dsVIDEO_CODEC_MPEG2 = (0x01 << 2),
+} dsVideoCodingFormat_t;
+
+/* HEVC version 1 profiles are listed. More may be added to it as the support becomes available.*/
+typedef enum
+{
+    dsVIDEO_CODEC_HEVC_PROFILE_MAIN = (0x01 << 0),
+    dsVIDEO_CODEC_HEVC_PROFILE_MAIN10 = (0x01 << 1),
+    dsVIDEO_CODEC_HEVC_PROFILE_MAINSTILLPICTURE = (0x01 << 2),
+} dsVideoCodecHevcProfiles_t;
+
+typedef struct
+{
+   dsVideoCodecHevcProfiles_t profile;
+   float level;
+} dsVideoCodecProfileSupport_t;
+
+typedef struct
+{
+    unsigned int num_entries;
+    dsVideoCodecProfileSupport_t entries[10];
+} dsVideoCodecInfo_t;
+
   /** @addtogroup DSHAL_VERSION_TYPES Device Settings HAL VERSION Definitions
  *  @ingroup DSHAL_VERSION
  *  @{
