@@ -564,7 +564,7 @@ static int  _dsSendVideoPortPostResolutionCall(dsVideoPortResolution_t *resoluti
 	}
 
 	if (ret == dsERR_NONE){
-		//IARM_Bus_DSMgr_EventData_t eventData;
+		  IARM_Bus_DSMgr_EventData_t eventData;
 		  IARM_Bus_CommonAPI_ResChange_Param_t param;
 
 			switch(resolution->pixelResolution) {
@@ -602,8 +602,10 @@ static int  _dsSendVideoPortPostResolutionCall(dsVideoPortResolution_t *resoluti
 				param.height = 720;
 			break;
 			}
+			eventData.data.resn.width = param.width;
+			eventData.data.resn.height = param.height;
 			IARM_BusDaemon_ResolutionPostchange(param);
-			//IARM_Bus_BroadcastEvent(IARM_BUS_DSMGR_NAME,(IARM_EventId_t)IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE,(void *)&eventData, sizeof(eventData));
+			IARM_Bus_BroadcastEvent(IARM_BUS_DSMGR_NAME,(IARM_EventId_t)IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE,(void *)&eventData, sizeof(eventData));
 		}
 	return ret;
 }
