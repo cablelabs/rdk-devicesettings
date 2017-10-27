@@ -66,6 +66,7 @@ IARM_Result_t _dsDisplayTerm(void *arg);
 void _dsDisplayEventCallback(int handle, dsDisplayEvent_t event, void *eventData);
 static void  filterEDIDResolution(int handle, dsDisplayEDID_t *edid);
 static dsVideoPortType_t _GetDisplayPortType(int handle);
+extern dsHdcpStatus_t dsGetHDCPAuthStatus(void);
 
 IARM_Result_t dsDisplayMgr_init()
 {
@@ -274,6 +275,7 @@ void _dsDisplayEventCallback(int handle, dsDisplayEvent_t event, void *eventData
                 
         case dsDISPLAY_HDCPPROTOCOL_CHANGE:
              __TIMESTAMP();printf("HDCP Protocol Version Change !!!!!!!! ..\r\n");
+	     _eventData.data.hdmi_hdcp.hdcpStatus = dsGetHDCPAuthStatus();
              _eventId = IARM_BUS_DSMGR_EVENT_HDCP_STATUS;
              break;
 

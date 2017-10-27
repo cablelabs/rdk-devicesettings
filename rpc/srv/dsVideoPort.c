@@ -610,6 +610,11 @@ void _dsHdcpCallback (int handle, dsHdcpStatus_t status)
 	IARM_Bus_BroadcastEvent(IARM_BUS_DSMGR_NAME,(IARM_EventId_t)IARM_BUS_DSMGR_EVENT_HDCP_STATUS,(void *)&hdcp_eventData, sizeof(hdcp_eventData));
 	IARM_BUS_Unlock(lock);
 }
+dsHdcpStatus_t dsGetHDCPAuthStatus (void )
+{
+    _DEBUG_ENTER();
+    return _hdcpStatus;
+}
 
 IARM_Result_t _dsGetHDCPStatus (void *arg)
 {
