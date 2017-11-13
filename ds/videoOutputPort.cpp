@@ -63,6 +63,10 @@ const char * VideoOutputPort::kPropertyResolution = ".resolution";
 
 
 /**
+ * @addtogroup dssettingsvidoutportapi
+ * @{
+ */
+/**
  * @fn  VideoOutputPort::getInstance(int id)
  * @brief This API is used to get the instance of the video output port based on the port id returned by the getsupported videooutput port.
  *
@@ -619,7 +623,7 @@ void VideoOutputPort::getSupportedTvResolutions(int *resolutions) const
 
 }
 
-
+/** @} */ //End of Doxygen tag
 
 
 /** @} */

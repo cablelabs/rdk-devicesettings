@@ -43,7 +43,6 @@
 #include <string.h>
 #include <sstream>
 
-
 /**
  * @file videoOutputPortType.cpp
  * @brief VideoOutputPortType objects are instantiated by the Device Settings module upon initialization.
@@ -91,6 +90,11 @@ const int VideoOutputPortType::kHDMI 		= dsVIDEOPORT_TYPE_HDMI;
 const int VideoOutputPortType::kInternal 	= dsVIDEOPORT_TYPE_INTERNAL;
 const int VideoOutputPortType::kMax 		= dsVIDEOPORT_TYPE_MAX;
 
+
+/**
+ * @addtogroup dssettingsvidoutporttypeapi
+ * @{
+ */
 
 /**
  * @fn  VideoOutputPortType::getInstance(int id)
@@ -314,6 +318,7 @@ const List<VideoResolution >  VideoOutputPortType::getSupportedResolutions() con
 
 }
 
+/* @} */ //End of Doxygen Tag
 
 /** @} */
 /** @} */

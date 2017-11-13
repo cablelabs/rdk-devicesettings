@@ -51,7 +51,89 @@
  *
  */
 
+/** 
+ * @defgroup DSSETTINGS_HAL Device Settings HAL Types & Public API
+ * HAL types and public API definitions for SoC/OEM components of the RDK.
+ * @ingroup DSSETTINGS
+ */
 
+/**
+ * @defgroup DSHAL_API Device Settings HAL Data Types
+ * @ingroup DSSETTINGS_HAL
+ *
+ * The RDK Device Settings (DS) component is a cross-platform library for controlling
+ * STB platform hardware configuration. The areas controlled by the DS component are:
+ *  - Audio output ports (volume, mute, etc.),
+ *  - Video ouptut ports (resolutions, aspect ratio, etc.),
+ *  - Video device (zoom settings)
+ *  - Display (aspect ratio, EDID data, etc.),
+ *  - Front-panel indicators,
+ *  - General platform (host) configuration,
+ *
+ * @note Each module in the Device Settings component has an initialization function and
+ * a termination function. Clients of the HAL API are required to call the initialization
+ * function first before using any other APIs from the module. If the initialization
+ * function is not yet called, all HAL API invocations shall return ::dsERR_INVALID_STATE.
+ * If an API is not supported on a platform, the implementation shall return
+ * ::dsERR_OPERATION_NOT_SUPPORTED. Otherwise, the API shall return ::dsERR_NONE upon
+ * success, or return the most suitable error code. Vendors implementing HAL APIs are
+ * allowed to add to the dsError_t enumerations, but should only do so with discretion.
+ *
+ * @defgroup DSHAL_HOST Device Settings HAL Host Types
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Host subsystem.
+ *
+ * @defgroup DSHAL_AUDIO Device Settings HAL Audio Types
+ * @ingroup DSHAL_API
+ *
+ *  DeviceSettings HAL types and public API definitions that are part of the Device
+ *  Settings Audio subsystem.
+ *
+ * @defgroup DSHAL_VIDEO Device Settings HAL Video Sub-Component
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Video subsystem.  The video subsystem consists of two sub-components, the
+ * Video Port subsystem and the Video Device subsystem.
+ *
+ * @defgroup DSHAL_VIDEOPORT Device Settings HAL VideoPort Types
+ * @ingroup DSHAL_VIDEO
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Video Port subsystem.
+ *
+ * @defgroup DSHAL_VIDEODEVICE Device Settings HAL VideoDevice Types
+ * @ingroup DSHAL_VIDEO
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Video Device subsystem.
+ *
+ * @defgroup DSHAL_DISPLAY Device Settings HAL Display Types
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Display subsystem.
+ *
+ * @defgroup DSHAL_FPD Device Settings HAL Front Panel Display Types
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings Front Panel Display (FPD) subsystem.
+ * 
+ * @defgroup DSHAL_HDMI_IN Device Settings HAL HDMI Input Types
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings HDMI In subsystem.
+ *
+ * @defgroup DSHAL_VERSION Device Settings HAL Version Types
+ * @ingroup DSHAL_API
+ *
+ * DeviceSettings HAL types and public API definitions that are part of the Device
+ * Settings HDMI In subsystem.
+ */
 
 /**
 * @defgroup devicesettings
@@ -77,106 +159,6 @@ typedef int32_t bool;
 #endif
 /** @endcond */
 
-/** @defgroup COMCAST_RDK_HAL Device Settings HAL Types & Public API
- *  HAL types and public API definitions for SoC/OEM components of the Comcast RDK.
- *  @ingroup devicesettings
- *
- */
-
-/** @defgroup DSHAL_API Device Settings HAL Data Types
- *  @ingroup COMCAST_RDK_HAL
- *
- * The RDK Device Settings (DS) component is a cross-platform library for controlling
- * STB platform hardware configuration. The areas controlled by the DS component are:
- *  - Audio output ports (volume, mute, etc.),
- *  - Video ouptut ports (resolutions, aspect ratio, etc.),
- *  - Video device (zoom settings)
- *  - Display (aspect ratio, EDID data, etc.),
- *  - Front-panel indicators,
- *  - General platform (host) configuration,
- *
- * @note Each module in the Device Settings component has an initialization function and
- * a termination function. Clients of the HAL API are required to call the initialization
- * function first before using any other APIs from the module. If the initialization
- * function is not yet called, all HAL API invocations shall return ::dsERR_INVALID_STATE.
- * If an API is not supported on a platform, the implementation shall return
- * ::dsERR_OPERATION_NOT_SUPPORTED. Otherwise, the API shall return ::dsERR_NONE upon
- * success, or return the most suitable error code. Vendors implementing HAL APIs are
- * allowed to add to the dsError_t enumerations, but should only do so with discretion.
- */
-
-/** @defgroup DSHAL_HOST Device Settings HAL Host Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Host subsystem.
- *
- */
-
-/** @defgroup DSHAL_AUDIO Device Settings HAL Audio Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Audio subsystem.
- *
- */
-
-/** @defgroup DSHAL_VIDEO Device Settings HAL Video Sub-Component
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Video subsystem.  The video subsystem consists of two sub-components, the
- *  Video Port subsystem and the Video Device subsystem.
- *
- */
-
-/** @defgroup DSHAL_VIDEOPORT Device Settings HAL VideoPort Types
- *  @ingroup DSHAL_VIDEO
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Video Port subsystem.
- *
- */
-
-/** @defgroup DSHAL_VIDEODEVICE Device Settings HAL VideoDevice Types
- *  @ingroup DSHAL_VIDEO
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Video Device subsystem.
- *
- */
-
-/** @defgroup DSHAL_DISPLAY Device Settings HAL Display Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Display subsystem.
- *
- */
-
-/** @defgroup DSHAL_FPD Device Settings HAL Front Panel Display Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings Front Panel Display (FPD) subsystem.
- *
- */
- 
- /** @defgroup DSHAL_HDMI_IN Device Settings HAL HDMI Input Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings HDMI In subsystem.
- *
- */
-
- /** @defgroup DSHAL_VERSION Device Settings HAL Version Types
- *  @ingroup DSHAL_API
- *
- *  DeviceSettings HAL types and public API definitions that are part of the Device
- *  Settings HDMI In subsystem.
- *
- */
 /** @addtogroup DSHAL_AUDIO Device Settings HAL Audio Types
  *  @{
  */

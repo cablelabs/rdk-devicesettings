@@ -48,6 +48,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+
+
 /**
  * @file audioOutputPort.cpp
  * @brief AudioOutputPort objects are instantiated by the Device Settings module upon initialization.
@@ -61,6 +63,10 @@ extern dsError_t dsSetStereoMode(int handle, dsAudioStereoMode_t mode,bool IsPer
 namespace device {
 
 
+/**
+ * @addtogroup dssettingsaudoutportapi
+ * @{
+ */
 /**
  * @fn AudioOutputPort::getInstance(int id)
  * @brief This API is used to get the instance of the audio output port based on the port id returned by the getsupported audiooutput port.
@@ -688,6 +694,7 @@ bool AudioOutputPort::isAudioMSDecode() const
 
 }
 
+/** @} */
 
 /** @} */
 /** @} */
