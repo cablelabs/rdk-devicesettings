@@ -128,7 +128,11 @@ VideoOutputPort::VideoOutputPort(const int type, const int index, const int id, 
 		ret = dsIsVideoPortEnabled(_handle, &enabled);
 		if (ret == dsERR_NONE) {
 			_enabled = enabled;
-			_contentProtected = false;
+
+			if (dsIsHDCPEnabled (_handle, &_contentProtected) != dsERR_NONE)
+			{
+				_contentProtected = true;
+			}
 
 			bool connected = false;
 			ret = dsIsDisplayConnected(_handle, &connected);
@@ -195,17 +199,17 @@ AudioOutputPort &VideoOutputPort::getAudioOutputPort()
  *
  * @return Reference to the output resolution
  */
-const VideoResolution & VideoOutputPort::getResolution() 
+const VideoResolution & VideoOutputPort::getResolution()
 {
 	dsVideoPortResolution_t resolution;
 	memset(resolution.name,'\0',sizeof(resolution.name));
-	
+
 	dsGetResolution(_handle,&resolution);
 
 	/*Copy onto Temp - Safe*/
 	std::string temp( resolution.name,strlen(resolution.name));
 	_resolution = string(temp);
-	
+
 	return VideoResolution::getInstance(_resolution);
 }
 
@@ -369,7 +373,7 @@ void VideoOutputPort::setResolution(const std::string &resolutionName)
 	if (ret != dsERR_NONE) {
 		throw Exception(ret);
 	}
-	
+
 	_resolution = newResolution.getName();
 }
 
@@ -415,9 +419,25 @@ bool VideoOutputPort::isContentProtected() const
  */
 void VideoOutputPort::enable()
 {
-	if (dsEnableVideoPort(_handle, true) == dsERR_NONE)
+	if (!_enabled)
 	{
-		_enabled = true;
+		dsError_t hdcpError = dsERR_NONE;
+
+		if (_contentProtected)
+		{
+			hdcpError = dsEnableHDCP (_handle, true, NULL, 0);
+
+			if (hdcpError == dsERR_NONE) {
+				printf("VideoOutputPort::enable HDCP enabled\r\n");
+			} else {
+				printf("VideoOutputPort::enable dsEnableHDCP %d\r\n", hdcpError);
+			}
+		}
+
+		if (hdcpError == dsERR_NONE && dsEnableVideoPort(_handle, true) == dsERR_NONE)
+		{
+			_enabled = true;
+		}
 	}
 }
 
@@ -430,9 +450,23 @@ void VideoOutputPort::enable()
  */
 void VideoOutputPort::disable()
 {
-	if (dsEnableVideoPort(_handle, false) == dsERR_NONE)
+	if (_enabled)
 	{
-		_enabled = false;
+		if (dsEnableVideoPort(_handle, false) == dsERR_NONE)
+		{
+			_enabled = false;
+		}
+
+		if (_contentProtected && !_enabled)
+		{
+			dsError_t hdcpError = dsEnableHDCP (_handle, false, NULL, 0);
+
+			if (hdcpError == dsERR_NONE) {
+				printf("VideoOutputPort::disable HDCP disabled\r\n");
+			} else {
+				printf("VideoOutputPort::disable dsEnableHDCP %d\r\n", hdcpError);
+			}
+		}
 	}
 }
 
@@ -456,7 +490,7 @@ VideoOutputPort::Display::Display(VideoOutputPort &vPort)
 
 /**
  * @fn bool VideoOutputPort::Display::hasSurround(void) const
- * @brief This function returns true if connected display supports surround audio 
+ * @brief This function returns true if connected display supports surround audio
  *
  * @param None.
  * @return true if the connected sink has surround capability.
@@ -508,7 +542,7 @@ void VideoOutputPort::Display::getEDIDBytes(std::vector<uint8_t> &edid) const
         if (length <= 1024) {
             printf("VideoOutputPort::Display::getEDIDBytes has %d bytes\r\n", length);
             edid.clear();
-            edid.insert(edid.begin(), edidBytes, edidBytes + length); 
+            edid.insert(edid.begin(), edidBytes, edidBytes + length);
             free(edidBytes);
         }
         else {
@@ -533,13 +567,13 @@ VideoOutputPort::Display::~Display()
 }
 
 
-int VideoOutputPort::getHDCPStatus() 
+int VideoOutputPort::getHDCPStatus()
 {
     dsHdcpStatus_t hdcpStatus;
     int _hdcpStatus = 0;
 
     dsError_t ret = dsGetHDCPStatus(_handle, &hdcpStatus);
-    
+
     if (ret != dsERR_NONE) {
         throw Exception(ret);
     }
