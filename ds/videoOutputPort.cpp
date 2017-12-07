@@ -621,6 +621,11 @@ void VideoOutputPort::getSupportedTvResolutions(int *resolutions) const
     dsSupportedTvResolutions(_handle,resolutions);
 }
 
+int VideoOutputPort::forceDisable4KSupport(bool disable)
+{
+	dsSetForceDisable4KSupport(_handle, disable);
+	return 0;
+}
 }
 
 /** @} */ //End of Doxygen tag

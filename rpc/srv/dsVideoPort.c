@@ -60,6 +60,7 @@ static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
 static std::string _dsHDMIResolution("720p");
 static std::string _dsCompResolution("720p");
 static dsHdcpStatus_t _hdcpStatus = dsHDCP_STATUS_UNAUTHENTICATED;
+static bool force_disable_4K = false;
 
 #define NULL_HANDLE 0
 #define IARM_BUS_Lock(lock) pthread_mutex_lock(&dsLock)
@@ -83,6 +84,8 @@ IARM_Result_t _dsGetHDCPCurrentProtocol(void *arg);
 IARM_Result_t _dsIsVideoPortActive(void *arg);
 IARM_Result_t _dsGetTVHDRCapabilities(void *arg);
 IARM_Result_t _dsSupportedTvResolutions(void *arg);
+IARM_Result_t _dsSetForceDisable4K(void *arg);
+IARM_Result_t _dsGetForceDisable4K(void *arg);
 
 
 static dsVideoPortType_t _GetVideoPortType(int handle);
@@ -133,6 +136,24 @@ IARM_Result_t dsVideoPortMgr_init()
 	{
 		printf("Error in Getting the Video Resolution on Startup..... \r\n");
 	}
+	try
+	{
+		std::string _4K_setting("false");
+		_4K_setting = device::HostPersistence::getInstance().getProperty("VideoDevice.force4KDisabled", _4K_setting);
+		if (_4K_setting.compare("true") == 0)
+		{
+			force_disable_4K = true;
+			printf("4K support in disabled configuration.\n");
+                }
+		else
+		{
+			force_disable_4K = false;
+		}
+	}
+	catch(...) 
+	{
+		printf("Exception in getting force-disable-4K setting at start up.\r\n");
+	}
 	IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsVideoPortInit, _dsVideoPortInit);
     return IARM_RESULT_SUCCESS;
 }
@@ -170,6 +191,8 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsVideoPortActive ,_dsIsVideoPortActive); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetTVHDRCapabilities,_dsGetTVHDRCapabilities);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedTVResolution,_dsSupportedTvResolutions);
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetForceDisable4K, _dsSetForceDisable4K); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetForceDisable4K, _dsGetForceDisable4K); 
 	
         m_isInitialized = 1;
     }
@@ -396,6 +419,17 @@ IARM_Result_t _dsSetResolution(void *arg)
 		dsVideoPortResolution_t resolution = param->resolution;
 		std::string resolutionName(resolution.name);
 
+		if(force_disable_4K)
+		{
+			std::size_t location = resolutionName.find("2160");
+			if(std::string::npos != location)
+			{
+				//Trying to set 4K resolution when it's disabled. This cannot be allowed.
+				printf("Error! Cannot set 4K resolution. Support for 4K is disabled.\n");
+				IARM_BUS_Unlock(lock);
+				return IARM_RESULT_SUCCESS;
+			}
+		}
 		/* * Check the Platform Resolution 
 		   * If the platform Resolution is same as requested , Do not set new resolution
 		   * Needed to avoid setting resolution during multiple hot plug  
@@ -1015,6 +1049,42 @@ static dsVideoResolution_t getPixelResolution(std::string &resolution )
 }
 
 
+IARM_Result_t _dsSetForceDisable4K(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    
+    dsForceDisable4KParam_t *param = (dsForceDisable4KParam_t *)arg;
+	param->result = dsERR_NONE;
+
+	force_disable_4K = param->disable;
+	if(force_disable_4K)
+	{
+		device::HostPersistence::getInstance().persistHostProperty("VideoDevice.force4KDisabled","true");
+	}
+	else
+	{
+		device::HostPersistence::getInstance().persistHostProperty("VideoDevice.force4KDisabled","false");
+	}
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetForceDisable4K(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    
+    dsForceDisable4KParam_t *param = (dsForceDisable4KParam_t *)arg;
+	param->result = dsERR_NONE;
+
+	param->disable = force_disable_4K;
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
 
 /** @} */
 /** @} */

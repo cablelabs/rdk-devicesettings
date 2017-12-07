@@ -54,6 +54,7 @@ static int m_isInitialized = 0;
 static int m_isPlatInitialized = 0;
 static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
 static dsVideoZoom_t srv_dfc = dsVIDEO_ZOOM_FULL;
+static bool force_disable_hdr = true;
 
 #define IARM_BUS_Lock(lock) pthread_mutex_lock(&dsLock)
 #define IARM_BUS_Unlock(lock) pthread_mutex_unlock(&dsLock)
@@ -66,6 +67,7 @@ IARM_Result_t _dsVideoDeviceTerm(void *arg);
 IARM_Result_t _dsGetHDRCapabilities(void *arg);
 IARM_Result_t _dsGetSupportedVideoCodingFormats(void *arg);
 IARM_Result_t _dsGetVideoCodecInfo(void *arg);
+IARM_Result_t _dsForceDisableHDR(void *arg);
 
 IARM_Result_t dsVideoDeviceMgr_init()
 {
@@ -89,6 +91,24 @@ IARM_Result_t dsVideoDeviceMgr_init()
 		printf("Exception in Getting the Zoom settings on Startup..... \r\n");
 	}
 
+	try
+	{
+		std::string _hdr_setting("true");
+		_hdr_setting = device::HostPersistence::getInstance().getProperty("VideoDevice.forceHDRDisabled", _hdr_setting);
+		if (_hdr_setting.compare("false") == 0)
+		{
+			force_disable_hdr = false;
+		}
+		else
+		{
+			force_disable_hdr = true;
+			printf("HDR support in disabled configuration.\n");
+		}
+	}
+	catch(...) 
+	{
+		printf("Exception in getting force-disable-HDR setting at start up.\r\n");
+	}
 
     if (!m_isPlatInitialized) {
     	dsVideoDeviceInit();
@@ -117,6 +137,7 @@ IARM_Result_t _dsVideoDeviceInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDRCapabilities,_dsGetHDRCapabilities); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats, _dsGetSupportedVideoCodingFormats); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetVideoCodecInfo, _dsGetVideoCodecInfo); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetForceDisableHDR, _dsForceDisableHDR); 
         m_isInitialized = 1;
     }
 
@@ -261,7 +282,7 @@ IARM_Result_t _dsGetHDRCapabilities(void *arg)
         }
     }
     dsGetHDRCapabilitiesParam_t *param = (dsGetHDRCapabilitiesParam_t *)arg;
-    if(0 != func) {
+    if((0 != func) && (false == force_disable_hdr)) {
         param->result = func(param->handle, &param->capabilities);
     }
     else {
@@ -313,7 +334,7 @@ IARM_Result_t _dsGetVideoCodecInfo(void *arg)
     _DEBUG_ENTER();
 
     IARM_BUS_Lock(lock);
-    
+
     typedef dsError_t (*dsGetVideoCodecInfoFunc_t)(int handle, dsVideoCodingFormat_t codec, dsVideoCodecInfo_t * info);
     static dsGetVideoCodecInfoFunc_t func = 0;
     if (func == 0) {
@@ -332,6 +353,7 @@ IARM_Result_t _dsGetVideoCodecInfo(void *arg)
             printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
         }
     }
+
     dsGetVideoCodecInfoParam_t *param = (dsGetVideoCodecInfoParam_t *)arg;
     if(0 != func) {
         param->result = func(param->handle, param->format, &param->info);
@@ -339,6 +361,29 @@ IARM_Result_t _dsGetVideoCodecInfo(void *arg)
     else {
         param->result = dsERR_OPERATION_NOT_SUPPORTED;
     }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsForceDisableHDR(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+    
+    dsForceDisableHDRParam_t *param = (dsForceDisableHDRParam_t *)arg;
+	param->result = dsERR_NONE;
+
+	force_disable_hdr = param->disable;
+	if(force_disable_hdr)
+	{
+		device::HostPersistence::getInstance().persistHostProperty("VideoDevice.forceHDRDisabled","true");
+	}
+	else
+	{
+		device::HostPersistence::getInstance().persistHostProperty("VideoDevice.forceHDRDisabled","false");
+	}
 
     IARM_BUS_Unlock(lock);
     return IARM_RESULT_SUCCESS;

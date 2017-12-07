@@ -142,6 +142,8 @@ dsError_t dsGetSupportedVideoCodingFormats(int handle, unsigned int * supported_
  */
 dsError_t dsGetVideoCodecInfo(int handle, dsVideoCodingFormat_t codec, dsVideoCodecInfo_t * info); 
 
+dsError_t dsForceDisableHDRSupport(int handle, bool disable);
+
 /* End of DSHAL_VIDEODEVICE_API doxygen group */
 /**
  * @}

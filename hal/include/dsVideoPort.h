@@ -368,6 +368,8 @@ dsError_t dsGetTVHDRCapabilities(int handle, int *capabilities);
  * @return dsError_t Error code.
  */
 dsError_t dsSupportedTvResolutions(int handle, int *resolutions);
+dsError_t dsSetForceDisable4KSupport(int handle, bool disable);
+dsError_t dsGetForceDisable4KSupport(int handle, bool *disable);
 
 /**
  * @}

@@ -110,6 +110,9 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetSupportedTVResolution     "dsGetSupportedTVResolution"
 #define IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats "dsGetSupportedVideoCodingFormats"
 #define IARM_BUS_DSMGR_API_dsGetVideoCodecInfo "dsGetVideoCodecInfo"
+#define IARM_BUS_DSMGR_API_dsSetForceDisableHDR "dsForceDisableHDR"
+#define IARM_BUS_DSMGR_API_dsSetForceDisable4K "dsSetForceDisable4K"
+#define IARM_BUS_DSMGR_API_dsGetForceDisable4K "dsGetForceDisable4K"
 
 /*
  * Declare RPC FP  API names
@@ -436,6 +439,20 @@ typedef struct
     dsVideoCodingFormat_t format;
     dsVideoCodecInfo_t info;
 } dsGetVideoCodecInfoParam_t;
+
+typedef struct
+{
+	dsError_t result;
+	int handle;
+	bool disable;
+} dsForceDisableHDRParam_t;
+
+typedef struct
+{
+	dsError_t result;
+	int handle;
+	bool disable;
+} dsForceDisable4KParam_t;
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,4 @@
-/*
- * If not stated otherwise in this file or this component's Licenses.txt file the
+/* If not stated otherwise in this file or this component's Licenses.txt file the
  * following copyright and licenses apply:
  *
  * Copyright 2016 RDK Management
@@ -510,5 +509,48 @@ dsError_t dsSupportedTvResolutions(int handle, int *resolutions)
 	return dsERR_GENERAL ;
 }
 
+dsError_t dsSetForceDisable4KSupport(int handle, bool disable)
+{
+	_DEBUG_ENTER();
+
+	dsForceDisable4KParam_t param;
+	memset(&param, 0, sizeof(param));
+	param.handle = handle;
+	param.disable = disable;
+
+	IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsSetForceDisable4K,
+			(void *) &param,
+			sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		return param.result;
+	}
+
+	return dsERR_GENERAL ;
+}
+
+dsError_t dsGetForceDisable4KSupport(int handle, bool *disable)
+{
+	_DEBUG_ENTER();
+
+	dsForceDisable4KParam_t param;
+	memset(&param, 0, sizeof(param));
+	param.handle = handle;
+
+	IARM_Result_t rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+			(char *) IARM_BUS_DSMGR_API_dsGetForceDisable4K,
+			(void *) &param,
+			sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		*disable = param.disable;
+		return param.result;
+	}
+
+	return dsERR_GENERAL ;
+}
 /** @} */
 /** @} */

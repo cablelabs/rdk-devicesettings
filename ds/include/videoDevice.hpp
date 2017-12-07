@@ -75,6 +75,7 @@ public:
         void getSettopSupportedResolutions(std::list<std::string>& stbSupportedResoltuions);
 	unsigned int getSupportedVideoCodingFormats() const;
 	dsVideoCodecInfo_t getVideoCodecInfo(dsVideoCodingFormat_t format) const;
+	int forceDisableHDRSupport(bool disable);
 };
 
 }

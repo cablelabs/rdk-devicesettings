@@ -33,7 +33,8 @@
 #include "illegalArgumentException.hpp"
 #include "dsVideoPortSettings.h"
 #include "dsVideoResolutionSettings.h"
- #include "dsDisplay.h"
+#include "dsDisplay.h"
+#include "dsVideoPort.h"
 #include "dsUtl.h"
 #include "dsError.h"
 #include "illegalArgumentException.hpp"
@@ -136,16 +137,16 @@ List<VideoResolution>  VideoOutputPortConfig::getSupportedResolutions()
 	List<VideoResolution> supportedResolutions;
 	int isDynamicList = 0;
 	dsError_t dsError = dsERR_NONE;
+	int _handle;
+	bool force_disable_4K = true;
 	
 	_supportedResolutions.clear(); /*Clear the Vector */
-
 	try {
 
 		device::VideoOutputPort vPort = VideoOutputPortConfig::getInstance().getPort("HDMI0");
 		if (vPort.isDisplayConnected())
 		{
 			dsDisplayEDID_t edid;
-			int _handle;
 			
 			/*Initialize the struct*/
 			memset(&edid, 0, sizeof(edid));
@@ -199,9 +200,20 @@ List<VideoResolution>  VideoOutputPortConfig::getSupportedResolutions()
 					resolution->interlaced));
 		}
 	}
-	
+
+	try {
+			dsGetForceDisable4KSupport(_handle, &force_disable_4K);
+	}
+	catch(...)
+	{
+		cout<<"Failed to get status of forceDisable4K!"<<endl;
+	}
 	for (std::vector<VideoResolution>::iterator it = _supportedResolutions.begin(); it != _supportedResolutions.end(); it++) {
 		if (it->isEnabled()) {
+			if((true == force_disable_4K) && (((it->getName() == "2160p60") || (it->getName() == "2160p30"))))
+			{
+				continue;
+			}
 			supportedResolutions.push_back(*it);
 		}
 	}

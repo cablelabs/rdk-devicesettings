@@ -66,7 +66,6 @@ class  VideoOutputPort : public Enumerable {
 	bool _enabled; //!< Method variable to check whether VideoPort is enabled or not.
 	bool _contentProtected; //!< Method variable tO check whether videoport is content protected or not.
 	bool _displayConnected; //!< Method variable to check whether the video display is connected or not.
-
 	int _aPortId;
 
 	std::string _defaultResolution;
@@ -253,6 +252,7 @@ public:
 	int getHDCPCurrentProtocol();
 	void getTVHDRCapabilities(int *capabilities) const;
 	void getSupportedTvResolutions(int *resolutions) const;
+	int forceDisable4KSupport(bool disable);
 
 
 private:

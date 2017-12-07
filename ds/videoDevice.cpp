@@ -287,6 +287,11 @@ dsVideoCodecInfo_t VideoDevice::getVideoCodecInfo(dsVideoCodingFormat_t format) 
 	return info;
 }
 
+int VideoDevice::forceDisableHDRSupport(bool disable)
+{
+	dsForceDisableHDRSupport(_handle, disable);
+	return 0;
+}
 }
 
 /** @} */
