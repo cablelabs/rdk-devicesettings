@@ -556,6 +556,24 @@ void AudioOutputPort::enableLEConfig(const bool enable)
 }
 
 /**
+ * @fn AudioOutputPort::enableMS12Config(const dsMS12FEATURE_t feature,const bool enable)
+ * @brief This API is used to enable MS12 features such as DAPV2 adn DE *
+ * @param[in] feature enums for feature name.
+ * @param[in] enable true/false to control feature.
+ *
+ * @return None
+ */
+void AudioOutputPort::enableMS12Config(const dsMS12FEATURE_t feature,const bool enable)
+{
+    dsError_t ret = dsERR_GENERAL;
+
+    ret = dsEnableMS12Config(_handle, feature, enable);
+
+    if (ret != dsERR_NONE)
+        printf("enableMS12Config failed with ret:%d \n",ret);
+}
+
+/**
  * @fn AudioOutputPort::setStereoAuto(const bool autoMode)
  * @brief This API is used to set the stereo mode to be auto; 
  * 

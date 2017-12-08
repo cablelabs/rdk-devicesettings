@@ -275,6 +275,18 @@ dsError_t  dsEnableAudioPort(int handle, bool enabled);
  */
 dsError_t  dsEnableLEConfig(int handle, const bool enable);
 
+/**
+ * @brief This function is used to enable or disable MS12 DAPV2 and DE feature.
+ *
+ * @param[in] handle      Handle of the Audio port.
+ * @param[in] feature     Enums for MS12 features
+ * @param[in] enable     Flag to control the MS12 features
+ *                         (@a true to enable, @a false to disable)
+ * @return Device Settings error code
+ * @retval dsERR_NONE If API executed successfully.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsEnableMS12Config(int handle, dsMS12FEATURE_t feature,const bool enable);
 
 
 /**

@@ -161,6 +161,14 @@ public:
  */
         bool hasSurround() const;
 
+/**
+ * @fn int getSurroundMode() const
+ * @brief This function returns surround mode supported by connected display
+ *
+ * @retval int
+ */
+        int getSurroundMode() const;
+
 
 /**
  * @fn const AspectRatio& getAspectRatio()

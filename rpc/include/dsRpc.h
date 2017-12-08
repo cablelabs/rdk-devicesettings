@@ -1,3 +1,4 @@
+
 /*
  * If not stated otherwise in this file or this component's Licenses.txt file the
  * following copyright and licenses apply:
@@ -63,6 +64,8 @@ extern "C" {
 #define  IARM_BUS_DSMGR_API_dsGetAudioLevel		"dsGetAudioLevel"
 #define  IARM_BUS_DSMGR_API_dsSetAudioLevel		"dsSetAudioLevel"
 #define  IARM_BUS_DSMGR_API_dsEnableLEConfig            "dsEnableLEConfig"
+#define  IARM_BUS_DSMGR_API_dsEnableMS12Config	"dsEnableMS12Config"
+
 
 
 /*
@@ -94,6 +97,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsIsVideoPortEnabled		"dsIsVideoPortEnabled"
 #define IARM_BUS_DSMGR_API_dsIsDisplayConnected		 "dsIsDisplayConnected"
 #define IARM_BUS_DSMGR_API_dsIsDisplaySurround 		 "dsIsDisplaySurround"
+#define IARM_BUS_DSMGR_API_dsGetSurroundMode 		 "dsGetSurroundMode"  
 #define IARM_BUS_DSMGR_API_dsEnableVideoPort		 "dsEnableVideoPort"
 #define IARM_BUS_DSMGR_API_dsSetResolution			"dsSetResolution"
 #define IARM_BUS_DSMGR_API_dsGetResolution			"dsGetResolution"
@@ -240,6 +244,11 @@ typedef struct _dsVideoPortIsDisplaySurroundParam_t {
 	int handle;
 	bool surround;
 } dsVideoPortIsDisplaySurroundParam_t;
+
+typedef struct _dsVideoPortGetSurroundModeParam_t {
+	int handle;
+	int surround;
+} dsVideoPortGetSurroundModeParam_t;
 
 
 typedef struct _dsVideoPortGetResolutionParam_t {
@@ -431,10 +440,17 @@ typedef struct _dsLEConfigParam_t
     bool               enable;
 } dsLEConfigParam_t;
 
+typedef struct _dsMS12ConfigParam_t
+{
+    int                handle;
+    dsMS12FEATURE_t    feature;
+    bool               enable;
+} dsMS12ConfigParam_t;
+
 typedef struct
 {
     dsError_t result;
-	int handle;
+    int handle;
     unsigned int supported_formats;
 } dsGetSupportedVideoCodingFormatsParam_t;
 

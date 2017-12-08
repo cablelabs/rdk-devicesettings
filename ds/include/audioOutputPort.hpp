@@ -34,6 +34,7 @@
 #include "audioStereoMode.hpp"
 #include "list.hpp"
 #include "enumerable.hpp"
+#include "dsTypes.h"
 
 #include <string>
 
@@ -134,6 +135,7 @@ public:
 	void setCompression(const std::string & compression);
 	void setStereoMode(const std::string & mode,const bool toPersist = true);
 	void enableLEConfig(const bool enable);
+	void enableMS12Config(const dsMS12FEATURE_t feature,const bool enable);
 
 
 	void setDB(const float db);

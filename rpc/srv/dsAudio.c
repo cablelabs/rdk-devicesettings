@@ -1,3 +1,4 @@
+
 /*
  * If not stated otherwise in this file or this component's Licenses.txt file the
  * following copyright and licenses apply:
@@ -31,6 +32,7 @@
 
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string.h>
 #include <pthread.h>
@@ -52,6 +54,8 @@ static int m_isInitialized = 0;
 static int m_isPlatInitialized = 0;
 
 static bool m_LEEnabled = 0;
+static bool m_MS12DAPV2Enabled = 0;
+static bool m_MS12DEEnabled = 0;
 
 static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
 int _srv_AudioAuto  = 0;
@@ -84,9 +88,94 @@ IARM_Result_t _dsSetAudioDB(void *arg);
 IARM_Result_t _dsGetAudioLevel(void *arg);
 IARM_Result_t _dsSetAudioLevel(void *arg);
 IARM_Result_t _dsEnableLEConfig(void *arg);
+IARM_Result_t _dsEnableMS12Config(void *arg);
 
 static void _GetAudioModeFromPersistent(void *arg);
 static dsAudioPortType_t _GetAudioPortType(int handle);
+
+static bool rfc_get_ms12_status()
+{
+    bool isMS12Enabled = false;
+    int sysRet = system(". /lib/rdk/isFeatureEnabled.sh MS12");
+    if((WEXITSTATUS(sysRet) == true) && (WIFEXITED(sysRet) == true))
+    {
+        isMS12Enabled = true;
+    }
+
+    __TIMESTAMP();printf("RFC MS12 feature status:%d",isMS12Enabled);
+    return isMS12Enabled;
+}
+
+void ms12ConfigInit()
+{
+    typedef dsError_t  (*dsEnableMS12Config_t)(int handle, dsMS12FEATURE_t feature,const bool enable);
+    int handle = 0;
+    if(rfc_get_ms12_status() == false)
+    {
+    	return;
+    }
+    dsGetAudioPort(dsAUDIOPORT_TYPE_HDMI,0,&handle);
+    static dsEnableMS12Config_t func = NULL;
+    if (func == NULL) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsEnableMS12Config_t) dlsym(dllib, "dsEnableMS12Config");
+            if (func) {
+                __TIMESTAMP();printf("dsEnableMS12Config(int, enum, bool) is defined and loaded\r\n");
+            	std::string _MS12DAPV2Enable("FALSE");
+            	try
+            	{
+            	    _MS12DAPV2Enable = device::HostPersistence::getInstance().getProperty("MS12.DAPV2Enable");
+            	}
+            	catch(...)
+            	{
+             		__TIMESTAMP();printf("MS12 : Persisting defaultMS12.DAPV2Enable  status: %s \r\n",_MS12DAPV2Enable.c_str());
+            		device::HostPersistence::getInstance().persistHostProperty("MS12.DAPV2Enable",_MS12DAPV2Enable);
+            	}
+            	__TIMESTAMP();printf("MS12 : Persistence DAPV2 status: %s \r\n",_MS12DAPV2Enable.c_str());
+            	if(_MS12DAPV2Enable == "TRUE")
+            	{
+            		m_MS12DAPV2Enabled = 1;
+            	}
+            	else
+            	{
+            		m_MS12DAPV2Enabled = 0;
+            	}
+            	func(handle,dsMS12FEATURE_DAPV2,m_MS12DAPV2Enabled);
+
+            	std::string _MS12DEEnable("FALSE");
+            	try
+            	{
+            	    _MS12DEEnable = device::HostPersistence::getInstance().getProperty("MS12.DEEnable");
+            	}
+            	catch(...)
+            	{
+             		__TIMESTAMP();printf("MS12 : Persisting default MS12.DEEnable  status: %s \r\n",_MS12DEEnable.c_str());
+            		device::HostPersistence::getInstance().persistHostProperty("MS12.DEEnable",_MS12DEEnable);
+            	}
+            	__TIMESTAMP();printf("MS12 : Persistence DE status: %s \r\n",_MS12DEEnable.c_str());
+
+            	if(_MS12DEEnable == "TRUE")
+            	{
+            		m_MS12DEEnabled = 1;
+            	}
+            	else
+            	{
+            		m_MS12DEEnabled = 0;
+            	}
+            	func(handle,dsMS12FEATURE_DE,m_MS12DEEnabled);
+            }
+            else {
+                __TIMESTAMP();printf("dsEnableMS12Config(int, enum, bool) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            __TIMESTAMP();printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+}
 
 void LEConfigInit()
 {
@@ -217,6 +306,7 @@ IARM_Result_t dsAudioMgr_init()
     	if (!m_isPlatInitialized) {
     		dsAudioPortInit();
                 LEConfigInit();
+    		ms12ConfigInit();
 	   	}
         /*coverity[missing_lock]  CID-19380 using Coverity Annotation to ignore error*/
         m_isPlatInitialized ++;
@@ -260,6 +350,7 @@ IARM_Result_t _dsAudioPortInit(void *arg)
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioLevel,_dsSetAudioLevel);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsAudioPortTerm,_dsAudioPortTerm);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableLEConfig,_dsEnableLEConfig);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableMS12Config,_dsEnableMS12Config);
 
         m_isInitialized = 1;
     }
@@ -268,6 +359,7 @@ IARM_Result_t _dsAudioPortInit(void *arg)
         /* Nexus init, if any here */
         dsAudioPortInit();
         LEConfigInit();
+        ms12ConfigInit();
    }
    m_isPlatInitialized++;
 
@@ -838,6 +930,78 @@ IARM_Result_t _dsEnableLEConfig(void *arg)
                 result = IARM_RESULT_SUCCESS;
             }
         }
+    }else {
+    }
+
+    IARM_BUS_Unlock(lock);
+
+    return result;
+}
+
+IARM_Result_t _dsEnableMS12Config(void *arg)
+{
+
+#ifndef RDK_DSHAL_NAME
+    #warning   "RDK_DSHAL_NAME is not defined"
+    #define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+    IARM_Result_t result = IARM_RESULT_INVALID_STATE;
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t  (*dsEnableMS12Config_t)(int handle, dsMS12FEATURE_t feature,const bool enable);
+    static dsEnableMS12Config_t func = NULL;
+    if (func == NULL) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsEnableMS12Config_t) dlsym(dllib, "dsEnableMS12Config");
+            if (func) {
+                __TIMESTAMP();printf("dsEnableMS12Config(int, enum, bool) is defined and loaded\r\n");
+            }
+            else {
+                __TIMESTAMP();printf("dsEnableMS12Config(int, enum, bool) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            __TIMESTAMP();printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+    _dsMS12ConfigParam_t *param = (_dsMS12ConfigParam_t *)arg;
+    if ((func != NULL) && (rfc_get_ms12_status() == true)) {
+    	__TIMESTAMP();printf("MS12: %s feature :%s enable status:%d \r\n",__FUNCTION__,((param->feature==dsMS12FEATURE_DAPV2)?"DAPV2":"DE"),param->enable);
+
+        if((param->feature == dsMS12FEATURE_DAPV2)  && (param->enable != m_MS12DAPV2Enabled) )
+        {
+            m_MS12DAPV2Enabled = param->enable;
+            //Persist DAPV2 setting
+            if(m_MS12DAPV2Enabled)
+                device::HostPersistence::getInstance().persistHostProperty("MS12.DAPV2Enable","TRUE");
+            else
+                device::HostPersistence::getInstance().persistHostProperty("MS12.DAPV2Enable","FALSE");
+
+            dsError_t ret = func(param->handle, param->feature, param->enable);
+            if (ret == dsERR_NONE) {
+            	result = IARM_RESULT_SUCCESS;
+            }
+        }
+        if((param->feature == dsMS12FEATURE_DE)  && (param->enable != m_MS12DEEnabled) )
+        {
+            m_MS12DEEnabled = param->enable;
+            //Persist DE setting
+            if(m_MS12DEEnabled)
+                device::HostPersistence::getInstance().persistHostProperty("MS12.DEEnable","TRUE");
+            else
+                device::HostPersistence::getInstance().persistHostProperty("MS12.DEEnable","FALSE");
+
+            dsError_t ret = func(param->handle, param->feature, param->enable);
+            if (ret == dsERR_NONE) {
+            	result = IARM_RESULT_SUCCESS;
+            }
+        }
+
     }else {
     }
 

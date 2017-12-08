@@ -1,3 +1,4 @@
+
 /*
  * If not stated otherwise in this file or this component's Licenses.txt file the
  * following copyright and licenses apply:
@@ -612,6 +613,28 @@ dsError_t dsEnableLEConfig(int handle, const bool enable)
 	return dsERR_NONE;
 }
 
+dsError_t dsEnableMS12Config(int handle, dsMS12FEATURE_t feature,const bool enable)
+{
+	_dsMS12ConfigParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+	param.handle = handle;
+	param.feature = feature;
+	param.enable = enable;
+
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsEnableMS12Config,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS != rpcRet)
+	{
+		return dsERR_GENERAL;
+	}
+
+	return dsERR_NONE;
+}
 
 
 /** @} */

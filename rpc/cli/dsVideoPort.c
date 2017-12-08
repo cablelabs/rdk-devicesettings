@@ -297,6 +297,34 @@ dsError_t  dsIsDisplaySurround(int handle, bool *surround)
 
 	return dsERR_GENERAL ;
 }
+
+dsError_t  dsGetSurroundMode(int handle, int *surround)
+{
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(surround != NULL, dsERR_INVALID_PARAM);
+   
+	dsVideoPortGetSurroundModeParam_t param;
+    
+	param.handle = handle;
+	param.surround = dsSURROUNDMODE_NONE;
+
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+	
+
+	
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+							(char *)IARM_BUS_DSMGR_API_dsGetSurroundMode,
+							(void *)&param,
+							sizeof(param));
+
+	if (IARM_RESULT_SUCCESS == rpcRet)
+	{
+		 *surround = param.surround;
+		 return dsERR_NONE;
+	}
+
+	return dsERR_GENERAL ;
+}
 dsError_t  dsEnableVideoPort(int handle, bool enabled)
 {
     _DEBUG_ENTER();

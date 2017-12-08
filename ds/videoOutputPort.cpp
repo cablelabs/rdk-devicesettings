@@ -465,7 +465,6 @@ VideoOutputPort::Display::Display(VideoOutputPort &vPort)
 	}
 }
 
-
 /**
  * @fn bool VideoOutputPort::Display::hasSurround(void) const
  * @brief This function returns true if connected display supports surround audio 
@@ -492,6 +491,34 @@ bool VideoOutputPort::Display::hasSurround(void) const
     }
 
     return surround;
+}
+  
+/**
+ * @fn bool VideoOutputPort::Display::getSurroundMode(void) const
+ * @brief This function returns the supports surround audio Mode
+ *
+ * @param None.
+ * @return enum for the surround capability.
+ */
+int VideoOutputPort::Display::getSurroundMode(void) const
+{
+    printf("VideoOutputPort::Display::getSurroundMode\r\n");
+
+    dsError_t ret = dsERR_NONE;
+    int surroundMode = dsSURROUNDMODE_NONE;
+    int vopHandle = 0;
+    ret = dsGetVideoPort(dsVIDEOPORT_TYPE_HDMI, 0, &vopHandle);
+    if (ret == dsERR_NONE) {
+	ret = dsGetSurroundMode(vopHandle, &surroundMode);
+	printf("VideoOutputPort::Display::getSurroundMode ret %d\r\n", ret);
+    }
+
+    if (ret != dsERR_NONE) {
+                surroundMode = dsSURROUNDMODE_NONE;
+		printf("VideoOutputPort::Display::getSurroundMode return default value dsSURROUNDMODE_NONE");
+    }
+
+    return surroundMode;
 }
 
 

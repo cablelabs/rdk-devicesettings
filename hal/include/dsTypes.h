@@ -511,6 +511,24 @@ typedef enum _dsHDRStandard_t {
 } dsHDRStandard_t;
 
 /**
+ * Enumeration defines surround mode.
+ * Each bit of uint32_t represent supported surround mode. 
+ */
+typedef enum _dsSURROUNDMode_t {
+    dsSURROUNDMODE_NONE = 0x0,
+    dsSURROUNDMODE_DD = 0x1,
+    dsSURROUNDMODE_DDPLUS = 0x2,
+} dsSURROUNDMode_t;
+
+/**
+ * Enumeration defines MS12 feature.
+ */
+typedef enum _dsMS12FEATURE_t {
+    dsMS12FEATURE_DAPV2 = 0x0,
+    dsMS12FEATURE_DE = 0x1,
+    dsMS12FEATURE_MAX = 0x2,
+} dsMS12FEATURE_t;
+/**
  * @ingroup DSHAL_AUDIO_TYPES
  * @brief Structure that defines audio port configuration.
  */

@@ -116,6 +116,18 @@ dsError_t  dsIsDisplayConnected(int handle, bool *connected);
  * @retval dsERR_GENERAL General failure.
  */
 dsError_t  dsIsDisplaySurround(int handle, bool *surround);
+  
+/**
+ * @brief This function is used to get supported surround mode.
+ *
+ * @param[in]  handle Handle of the video port.
+ * @param[out] surround mode.
+ *
+ * @return Device Settings error code
+ * @retval dsERR_NONE Indicates dsGetSurroundMode api has been called using IARM support.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsGetSurroundMode(int handle, int *surround);
 
 
 /**

@@ -71,6 +71,7 @@ IARM_Result_t _dsGetVideoPort(void *arg);
 IARM_Result_t _dsIsVideoPortEnabled(void *arg);
 IARM_Result_t _dsIsDisplayConnected(void *arg);
 IARM_Result_t _dsIsDisplaySurround(void *arg);
+IARM_Result_t _dsGetSurroundMode(void *arg);
 IARM_Result_t _dsEnableVideoPort(void *arg);
 IARM_Result_t _dsSetResolution(void *arg);
 IARM_Result_t _dsGetResolution(void *arg);
@@ -179,6 +180,7 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsVideoPortEnabled,_dsIsVideoPortEnabled);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsDisplayConnected,_dsIsDisplayConnected);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsDisplaySurround,_dsIsDisplaySurround);
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSurroundMode,_dsGetSurroundMode);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableVideoPort,_dsEnableVideoPort);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetResolution,_dsSetResolution);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetResolution,_dsGetResolution);
@@ -341,6 +343,52 @@ IARM_Result_t _dsIsDisplaySurround(void *arg)
 
 	IARM_BUS_Unlock(lock);
 	
+	return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetSurroundMode(void *arg)
+{
+
+#ifndef RDK_DSHAL_NAME
+#warning   "RDK_DSHAL_NAME is not defined"
+#define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    printf("dsSRV::_dsGetSurroundMode \r\n");
+
+    typedef dsError_t (*dsGetSurroundMode_t)(int handle, int *surround);
+    static dsGetSurroundMode_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsGetSurroundMode_t) dlsym(dllib, "dsGetSurroundMode");
+            if (func) {
+                printf("dsGetSurroundMode_t(int, int*) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsGetSurroundMode_t(int, int*) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+	dsVideoPortGetSurroundModeParam_t *param = (dsVideoPortGetSurroundModeParam_t *)arg;
+
+    if (func != 0) {
+        dsError_t ret = func(param->handle, &param->surround);
+        printf("dsSRV ::_dsGetSurroundMode() returns %d %d\r\n", ret, param->surround);
+    }
+    else {
+        param->surround = dsSURROUNDMODE_NONE;
+    }
+
+	IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
 }
 
