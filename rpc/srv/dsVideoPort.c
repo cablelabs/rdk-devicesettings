@@ -148,6 +148,7 @@ IARM_Result_t dsVideoPortMgr_init()
 		else
 		{
 			force_disable_4K = false;
+			printf("4K support in enabled configuration.\n");
 		}
 	}
 	catch(...) 

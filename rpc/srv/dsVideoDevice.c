@@ -98,6 +98,7 @@ IARM_Result_t dsVideoDeviceMgr_init()
 		if (_hdr_setting.compare("false") == 0)
 		{
 			force_disable_hdr = false;
+			printf("HDR support in enabled configuration.\n");
 		}
 		else
 		{
