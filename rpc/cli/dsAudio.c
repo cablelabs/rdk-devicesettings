@@ -590,6 +590,29 @@ dsError_t dsIsAudioMSDecode(int handle, bool *HasMS11Decode)
 	return dsERR_NONE;
 }
 
+dsError_t dsEnableLEConfig(int handle, const bool enable)
+{
+	_dsLEConfigParam_t param;
+	IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+	param.handle = handle;
+	param.enable = enable;
+
+
+	rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                            (char *)IARM_BUS_DSMGR_API_dsEnableLEConfig,
+                            (void *)&param,
+                            sizeof(param));
+
+	if (IARM_RESULT_SUCCESS != rpcRet)
+	{
+		return dsERR_GENERAL;
+	}
+
+	return dsERR_NONE;
+}
+
+
 
 /** @} */
 /** @} */

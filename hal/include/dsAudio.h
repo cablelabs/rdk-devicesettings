@@ -263,6 +263,19 @@ dsError_t  dsIsAudioPortEnabled(int handle, bool *enabled);
  */
 dsError_t  dsEnableAudioPort(int handle, bool enabled);
 
+/**
+ * @brief This function is used to enable or disable Loudness Equivalence feature.
+ *
+ * @param[in] handle      Handle of the Audio port.
+ * @param[in] enable     Flag to control the LE features
+ *                         (@a true to enable, @a false to disable)
+ * @return Device Settings error code
+ * @retval dsERR_NONE If API executed successfully.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsEnableLEConfig(int handle, const bool enable);
+
+
 
 /**
  * @brief Set the encoding type of an audio port.

@@ -51,6 +51,8 @@
 static int m_isInitialized = 0;
 static int m_isPlatInitialized = 0;
 
+static bool m_LEEnabled = 0;
+
 static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
 int _srv_AudioAuto  = 0;
 dsAudioStereoMode_t _srv_HDMI_Audiomode = dsAUDIO_STEREO_STEREO;
@@ -81,9 +83,58 @@ IARM_Result_t _dsGetAudioDB(void *arg);
 IARM_Result_t _dsSetAudioDB(void *arg);
 IARM_Result_t _dsGetAudioLevel(void *arg);
 IARM_Result_t _dsSetAudioLevel(void *arg);
+IARM_Result_t _dsEnableLEConfig(void *arg);
 
 static void _GetAudioModeFromPersistent(void *arg);
 static dsAudioPortType_t _GetAudioPortType(int handle);
+
+void LEConfigInit()
+{
+    typedef dsError_t  (*dsEnableLEConfig_t)(int handle, const bool enable);
+    int handle = 0;
+    dsGetAudioPort(dsAUDIOPORT_TYPE_HDMI,0,&handle);
+    static dsEnableLEConfig_t func = NULL;
+    if (func == NULL) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsEnableLEConfig_t) dlsym(dllib, "dsEnableLEConfig");
+            if (func) {
+                __TIMESTAMP();printf("dsEnableLEConfig(int, bool) is defined and loaded\r\n");
+                std::string _LEEnable("FALSE");
+                try
+                {
+                    _LEEnable = device::HostPersistence::getInstance().getProperty("audio.LEEnable");
+                }
+                catch(...)
+                {
+#ifndef DS_LE_DEFAULT_DISABLED
+                    _LEEnable = "TRUE";
+#endif
+                   __TIMESTAMP();printf("LE : Persisting default LE status: %s \r\n",_LEEnable.c_str());
+                   device::HostPersistence::getInstance().persistHostProperty("audio.LEEnable",_LEEnable);
+                }
+                if(_LEEnable == "TRUE")
+                {
+                    m_LEEnabled = 1;
+                    func(handle,m_LEEnabled);
+                }
+                else
+                {
+                    m_LEEnabled = 0;
+                    func(handle,m_LEEnabled);
+                }
+            }
+            else {
+                __TIMESTAMP();printf("dsEnableLEConfig(int,  bool) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            __TIMESTAMP();printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+}
 
 IARM_Result_t dsAudioMgr_init()
 {
@@ -165,6 +216,7 @@ IARM_Result_t dsAudioMgr_init()
 	}
     	if (!m_isPlatInitialized) {
     		dsAudioPortInit();
+                LEConfigInit();
 	   	}
         /*coverity[missing_lock]  CID-19380 using Coverity Annotation to ignore error*/
         m_isPlatInitialized ++;
@@ -207,6 +259,7 @@ IARM_Result_t _dsAudioPortInit(void *arg)
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetAudioLevel,_dsGetAudioLevel);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetAudioLevel,_dsSetAudioLevel);
         IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsAudioPortTerm,_dsAudioPortTerm);
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableLEConfig,_dsEnableLEConfig);
 
         m_isInitialized = 1;
     }
@@ -214,6 +267,7 @@ IARM_Result_t _dsAudioPortInit(void *arg)
     if (!m_isPlatInitialized) {
         /* Nexus init, if any here */
         dsAudioPortInit();
+        LEConfigInit();
    }
    m_isPlatInitialized++;
 
@@ -733,6 +787,63 @@ IARM_Result_t _dsIsAudioMSDecode(void *arg)
     IARM_BUS_Unlock(lock);
 
     return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsEnableLEConfig(void *arg)
+{
+
+#ifndef RDK_DSHAL_NAME
+    #warning   "RDK_DSHAL_NAME is not defined"
+    #define RDK_DSHAL_NAME "RDK_DSHAL_NAME is not defined"
+#endif
+    _DEBUG_ENTER();
+    IARM_Result_t result = IARM_RESULT_INVALID_STATE;
+
+    IARM_BUS_Lock(lock);
+
+    typedef dsError_t  (*dsEnableLEConfig_t)(int handle,const bool enable);
+    static dsEnableLEConfig_t func = NULL;
+    if (func == NULL) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsEnableLEConfig_t) dlsym(dllib, "dsEnableLEConfig");
+            if (func) {
+                __TIMESTAMP();printf("dsEnableLEConfig(int, bool) is defined and loaded\r\n");
+            }
+            else {
+                __TIMESTAMP();printf("dsEnableLEConfig(int, bool) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            __TIMESTAMP();printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+    _dsLEConfigParam_t *param = (_dsLEConfigParam_t *)arg;
+    if (func != NULL) {
+        __TIMESTAMP();printf("LE: %s  enable status:%d \r\n",__FUNCTION__,param->enable);
+
+        if(param->enable != m_LEEnabled)
+        {
+            m_LEEnabled = param->enable;
+            //Persist DAPV2 setting
+            if(m_LEEnabled)
+                device::HostPersistence::getInstance().persistHostProperty("audio.LEEnable","TRUE");
+            else
+                device::HostPersistence::getInstance().persistHostProperty("audio.LEEnable","FALSE");
+
+            dsError_t ret = func(param->handle, param->enable);
+            if (ret == dsERR_NONE) {
+                result = IARM_RESULT_SUCCESS;
+            }
+        }
+    }else {
+    }
+
+    IARM_BUS_Unlock(lock);
+
+    return result;
 }
 
 

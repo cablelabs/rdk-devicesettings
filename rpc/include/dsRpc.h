@@ -62,7 +62,7 @@ extern "C" {
 #define  IARM_BUS_DSMGR_API_dsSetAudioDB		"dsSetAudioDB"
 #define  IARM_BUS_DSMGR_API_dsGetAudioLevel		"dsGetAudioLevel"
 #define  IARM_BUS_DSMGR_API_dsSetAudioLevel		"dsSetAudioLevel"
-
+#define  IARM_BUS_DSMGR_API_dsEnableLEConfig            "dsEnableLEConfig"
 
 
 /*
@@ -424,6 +424,12 @@ typedef struct _dsGetHDRCapabilitiesParam_t
     int                     handle;
     int                     capabilities;
 } dsGetHDRCapabilitiesParam_t;
+
+typedef struct _dsLEConfigParam_t
+{
+    int                handle;
+    bool               enable;
+} dsLEConfigParam_t;
 
 typedef struct
 {

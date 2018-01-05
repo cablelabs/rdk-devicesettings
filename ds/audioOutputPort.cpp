@@ -538,6 +538,22 @@ void AudioOutputPort::setStereoMode(const int newMode, const bool toPersist)
 
 }
 
+/**
+ * @fn AudioOutputPort::enableLEConfig(const bool enable)
+ * @brief This API is used to enable Loudness Equivalence *
+ * @param[in] enable true/false to control feature.
+ *
+ * @return None
+ */
+void AudioOutputPort::enableLEConfig(const bool enable)
+{
+    dsError_t ret = dsERR_GENERAL;
+
+    ret = dsEnableLEConfig(_handle, enable);
+
+    if (ret != dsERR_NONE)
+        printf("enableLEConfig failed with ret:%d \n",ret);
+}
 
 /**
  * @fn AudioOutputPort::setStereoAuto(const bool autoMode)

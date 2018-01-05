@@ -133,6 +133,7 @@ public:
 	void setEncoding(const std::string & encoding);
 	void setCompression(const std::string & compression);
 	void setStereoMode(const std::string & mode,const bool toPersist = true);
+	void enableLEConfig(const bool enable);
 
 
 	void setDB(const float db);
