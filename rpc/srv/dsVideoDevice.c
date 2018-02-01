@@ -93,7 +93,7 @@ IARM_Result_t dsVideoDeviceMgr_init()
 
 	try
 	{
-		std::string _hdr_setting("true");
+		std::string _hdr_setting("false");
 		_hdr_setting = device::HostPersistence::getInstance().getProperty("VideoDevice.forceHDRDisabled", _hdr_setting);
 		if (_hdr_setting.compare("false") == 0)
 		{
