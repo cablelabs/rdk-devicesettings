@@ -88,7 +88,7 @@ IARM_Result_t _dsSetTimeFormat(void *arg);
 */
 static  dsFPDBrightness_t _dsPowerBrightness = dsFPD_BRIGHTNESS_MAX ;
 static  dsFPDBrightness_t _dsTextBrightness  = dsFPD_BRIGHTNESS_MAX ;
-static  dsFPDColor_t     _dsPowerLedColor   = dsFPD_COLOR_BLUE;
+static  dsFPDColor_t     _dsPowerLedColor[dsFPD_INDICATOR_MAX];
 static  dsFPDTimeFormat_t _dsTextTimeFormat	= dsFPD_TIME_12_HOUR;
 
 /** Structure that defines internal data base for the FP */
@@ -172,6 +172,10 @@ IARM_Result_t dsFPDMgr_init()
 	
 	try
 	{
+		for(int i = 0; i< dsFPD_INDICATOR_MAX; i++)
+		{
+			_dsPowerLedColor[i] = dsFPD_COLOR_BLUE;
+		}
 		/* Init the Power and Clock Brightness */
 		string value;
 		int maxBrightness = dsFPD_BRIGHTNESS_DEFAULT;	
@@ -500,7 +504,7 @@ IARM_Result_t _dsGetFPColor(void *arg)
     IARM_BUS_Lock(lock);
 
 	dsFPDColorParam_t *param = (dsFPDColorParam_t *)arg;
-	param->eColor = _dsPowerLedColor;
+	param->eColor = _dsPowerLedColor[param->eIndicator];
 	IARM_BUS_Unlock(lock);
 	return IARM_RESULT_SUCCESS;
 
@@ -513,6 +517,7 @@ IARM_Result_t _dsSetFPColor(void *arg)
 
 	dsFPDColorParam_t *param = (dsFPDColorParam_t *)arg;
     dsSetFPColor(param->eIndicator, param->eColor);
+    _dsPowerLedColor[param->eIndicator] = param->eColor;
     INFO("_dsSetFPColor Value  From  App is %d for Indicator %d \r\n",param->eColor,param->eIndicator);
     try{
 			switch (param->eIndicator)
