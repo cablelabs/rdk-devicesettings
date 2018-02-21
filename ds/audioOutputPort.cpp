@@ -206,6 +206,7 @@ const List<AudioStereoMode> AudioOutputPort::getSupportedStereoModes() const
  */
 const AudioEncoding & AudioOutputPort::getEncoding() const
 {
+	dsGetAudioEncoding(_handle, (dsAudioEncoding_t *)&_encoding);
 	return AudioEncoding::getInstance(_encoding);
 }
 
@@ -452,11 +453,14 @@ void AudioOutputPort::setEncoding(const int newEncoding)
 {
 	dsError_t ret = dsERR_NONE;
 
+#if 0
 	if ( (ret = dsSetAudioEncoding(_handle, (dsAudioEncoding_t)newEncoding)) == dsERR_NONE) {
 		_encoding = (int)newEncoding;
 	}
 
 	if (ret != dsERR_NONE) throw Exception(ret);
+#endif
+       throw Exception("Operation not Supported");
 }
 
 
