@@ -96,6 +96,9 @@ public:
 
 	void enabledDTCP();
 	void enabledHDCP(bool contentProtect = true, char *dhcpKey = 0, size_t keySize = 0);
+	void SDR2HDR(dsHdmiDrmEotf  source);
+	void GetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb);
+	void SetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb);
 	void setRestrictedResolution(int resolution);
 	void addResolution(const VideoResolution &resolution);
 	void addPort( const VideoOutputPort &port);

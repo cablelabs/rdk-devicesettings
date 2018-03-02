@@ -57,6 +57,9 @@ using namespace std;
 
 
 extern "C" dsError_t dsEnableHDCP(int handle, bool contentProtect, char *hdcpKey, size_t keySize);
+extern "C" dsError_t dsSDR2HDR(dsHdmiDrmEotf  source);
+extern "C" dsError_t dsSetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb);
+extern "C" dsError_t dsGetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb);
 
 namespace {
 	const char *_names[] = {
@@ -217,6 +220,37 @@ void VideoOutputPortType::enabledHDCP(bool contentProtect , char *hdcpKey , size
   		throw IllegalArgumentException();
   	}
  	_hdcpSupported = true;
+}
+
+void VideoOutputPortType::SDR2HDR(dsHdmiDrmEotf  source )
+{
+  	dsError_t ret = dsERR_NONE;
+  	ret = dsSDR2HDR(source);
+  	if (ret != dsERR_NONE)
+  	{
+  		throw IllegalArgumentException();
+  	}
+}
+
+void VideoOutputPortType::SetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb)
+{
+  	dsError_t ret = dsERR_NONE;
+  	ret = dsSetHDRGfxColorSpace(y,cr,cb);
+  	if (ret != dsERR_NONE)
+  	{
+  		throw IllegalArgumentException();
+  	}
+}
+
+void VideoOutputPortType::GetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb)
+{
+  	dsError_t ret = dsERR_NONE;
+
+  	ret = dsGetHDRGfxColorSpace(y,cr,cb);
+  	if (ret != dsERR_NONE)
+  	{
+  		throw IllegalArgumentException();
+  	}
 }
 
 

@@ -123,6 +123,61 @@ dsError_t dsIsHDCPEnabled(int handle, bool *enabled)
 	return dsERR_GENERAL ;
 }
 
+dsError_t dsSDR2HDR(dsHdmiDrmEotf  source)
+{
+	  _DEBUG_ENTER();
+	  dsSDR2HDRParam_t param;
+	  param.source= source;
+	  IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+       rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+							  (char *)IARM_BUS_DSMGR_API_dsSDR2HDR,
+							  (void *)&param,
+							  sizeof(param));
+	  if (IARM_RESULT_SUCCESS == rpcRet)
+	  {
+		   return dsERR_NONE;
+	  }
+      return dsERR_GENERAL ;
+}
+
+dsError_t dsGetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb)
+{
+	  _DEBUG_ENTER();
+	  dsSDR2HDRGraphicsParam_t param;
+	  IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+       rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+							  (char *)IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace,
+							  (void *)&param,
+							  sizeof(param));
+	  if (IARM_RESULT_SUCCESS == rpcRet)
+	  { 
+		  *y =  param.y ;
+		  *cr = param.cr ;
+		  *cb = param.cb ;	
+	      return dsERR_NONE;
+	  }
+      return dsERR_GENERAL ;
+}
+
+dsError_t dsSetHDRGfxColorSpace(int16_t *y, int16_t *cr, int16_t *cb)
+{
+	  _DEBUG_ENTER();
+	  dsSDR2HDRGraphicsParam_t param;
+  	  IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+	  param.y = *y;
+	  param.cr = *cr;
+	  param.cb = *cb;	  
+      rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,                             	  	  
+							  (char *)IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace,
+							  (void *)&param,
+							  sizeof(param));
+	  if (IARM_RESULT_SUCCESS == rpcRet)
+	  {
+		   return dsERR_NONE;
+	  }
+      return dsERR_GENERAL ;
+}
+
 dsError_t dsIsVideoPortEnabled(int handle, bool *enabled)
 {
     _DEBUG_ENTER();

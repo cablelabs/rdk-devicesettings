@@ -95,6 +95,10 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetHDCPStatus    		"dsGetHDCPStatus"
 #define IARM_BUS_DSMGR_API_dsIsVideoPortActive		"dsIsVideoPortActive"
 #define IARM_BUS_DSMGR_API_dsGetHDRCapabilities     "dsGetHDRCapabilities"
+#define IARM_BUS_DSMGR_API_dsSDR2HDR		 		"dsSDR2HDR"
+#define IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace	"dsGetHDRGfxColorSpace"
+#define IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace	"dsSetHDRGfxColorSpace"
+
 
 /*
  * Declare RPC FP  API names 
@@ -145,6 +149,16 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsGetVersion				"dsGetVersion"
 #define IARM_BUS_DSMGR_API_dsSetVersion				"dsSetVersion"
 
+typedef struct _dsSDR2HDRGraphicsParam_t {
+	int16_t y;
+	int16_t cr;
+	int16_t cb;	
+} dsSDR2HDRGraphicsParam_t;
+
+
+typedef struct _dsSDR2HDRParam_t {
+	dsHdmiDrmEotf  source;
+} dsSDR2HDRParam_t;
 
 typedef struct _dsAudioGetHandleParam_t {
 	dsAudioPortType_t type;

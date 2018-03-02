@@ -84,7 +84,9 @@ IARM_Result_t _dsEnableHDCP(void *arg);
 IARM_Result_t _dsIsHDCPEnabled(void *arg);
 IARM_Result_t _dsGetHDCPStatus(void *arg);
 IARM_Result_t _dsIsVideoPortActive(void *arg);
-
+IARM_Result_t _dsSDR2HDR(void *arg);
+IARM_Result_t _dsGetHDRGfxColorSpace(void *arg);
+IARM_Result_t _dsSetHDRGfxColorSpace(void *arg);
 
 static dsVideoPortType_t _GetVideoPortType(int handle);
 static int  _dsVideoPortPreResolutionCall(dsVideoPortResolution_t *resolution);
@@ -166,7 +168,10 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsHDCPEnabled,_dsIsHDCPEnabled);
 	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDCPStatus ,_dsGetHDCPStatus); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsVideoPortActive ,_dsIsVideoPortActive); 
-	
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSDR2HDR ,_dsSDR2HDR); 
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetHDRGfxColorSpace ,_dsGetHDRGfxColorSpace); 
+	    IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetHDRGfxColorSpace ,_dsSetHDRGfxColorSpace); 
+
         m_isInitialized = 1;
     }
 
@@ -248,6 +253,52 @@ IARM_Result_t _dsIsHDCPEnabled(void *arg)
     else{
     	__TIMESTAMP();printf("isHDCP =false !!!!!!..\r\n");
     }	
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSDR2HDR(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+    dsSDR2HDRParam_t *param = (dsSDR2HDRParam_t *)arg;
+	printf("INFOR:[SDR_HDR] %d\r\n",param->source);
+	dsSDR2HDR(param->source);
+    IARM_BUS_Unlock(lock);
+	
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetHDRGfxColorSpace(void *arg)
+{
+    int16_t y, cr, cb;
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+    dsSDR2HDRGraphicsParam_t *param = (dsSDR2HDRGraphicsParam_t *)arg;
+
+	dsGetHDRGfxColorSpace(&y,&cr,&cb);
+    if (param != NULL) {
+		param->y = y;
+		param->cr = cr ;
+		param->cb  = cb;
+   	}
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetHDRGfxColorSpace(void *arg)
+{
+	int16_t y, cr, cb;
+	_DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+	
+    dsSDR2HDRGraphicsParam_t *param = (dsSDR2HDRGraphicsParam_t *)arg;
+    if (param != NULL) {
+		y  = param->y;
+		cr = param->cr;
+		cb = param->cb;
+   	}
+	dsSetHDRGfxColorSpace(&y,&cr,&cb);
     IARM_BUS_Unlock(lock);
 	
     return IARM_RESULT_SUCCESS;
