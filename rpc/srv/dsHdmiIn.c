@@ -139,6 +139,16 @@ IARM_Result_t _dsHdmiInInit(void *arg)
 
     INFO("<<<<< called _dsHdmiInInit >>>>>>>>\r\n");
 
+#ifdef HAS_HDMI_IN_SUPPORT
+    if (!m_isPlatInitialized)
+    {
+        /* Nexus init, if any here */
+        HDMI_IN_TRACE(("%s - invoking dsHdmiInInit()\n", __PRETTY_FUNCTION__));
+        dsError_t eError = dsHdmiInInit();
+    }
+    m_isPlatInitialized++;
+#endif
+
     if (!m_isInitialized)
     {
 #ifdef HAS_HDMI_IN_SUPPORT
@@ -158,16 +168,6 @@ IARM_Result_t _dsHdmiInInit(void *arg)
 
         m_isInitialized = 1;
     }
-
-#ifdef HAS_HDMI_IN_SUPPORT
-    if (!m_isPlatInitialized)
-    {
-        /* Nexus init, if any here */
-        HDMI_IN_TRACE(("%s - invoking dsHdmiInInit()\n", __PRETTY_FUNCTION__));
-        dsError_t eError = dsHdmiInInit();
-    }
-    m_isPlatInitialized++;
-#endif
 
     IARM_BUS_Unlock(lock);
 
