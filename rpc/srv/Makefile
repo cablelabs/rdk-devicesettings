@@ -41,7 +41,7 @@ all: install
 
 library: $(OBJS)
 	@echo "Building $(LIBNAMEFULL) ...."
-	$(CXX) $(OBJS) $(CFLAGS) $(LDFLAGS) -shared -o $(LIBNAMEFULL)
+	$(CXX) $(OBJS) $(CFLAGS) $(LDFLAGS) $(DSHAL_SRV_LDFLAGS) -shared -o $(LIBNAMEFULL)
 
 %.o: %.c
 	@echo "Building $@ ...."
