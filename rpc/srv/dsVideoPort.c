@@ -30,6 +30,7 @@
 #include "dsVideoPort.h"
 #include "dsDisplay.h"
 
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -397,6 +398,9 @@ IARM_Result_t _dsSetResolution(void *arg)
 		memset(platresolution.name,'\0',sizeof(platresolution.name));
 		dsGetResolution(param->handle,&platresolution);
 		__TIMESTAMP();printf("Resolution Requested ..%s Platform Resolution - %s\r\n",resolution.name,platresolution.name);
+#if 1 // GENERIC RDK output resolution set
+        if ( NULL == getenv("BRCMDEBUG_OUTPUT_RES"))
+#endif
 		if ((strcmp(resolution.name,platresolution.name) == 0 ))
 		{
 			
