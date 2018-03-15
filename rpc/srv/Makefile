@@ -34,7 +34,9 @@ INCLUDE      += $(HAL_INCLUDE)
 CFLAGS      += $(INCLUDE)
 
 CFLAGS      +=$(HAL_BUILDFLAGS)
+#ifndef YOCTO_BUILD
 CFLAGS      +=-DRDK_DSHAL_NAME=\"libdshal.so\"
+#endif
 
 all: install
 	@echo "Build Finished...."
