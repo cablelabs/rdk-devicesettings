@@ -349,6 +349,32 @@ dsError_t  dsEnableVideoPort(int handle, bool enabled)
 	return dsERR_GENERAL ;
 }
 
+dsError_t  dsGetPlatformResolution(int handle, dsVideoPortResolution_t *resolution)
+{
+    _DEBUG_ENTER();
+    _RETURN_IF_ERROR(resolution != NULL, dsERR_INVALID_PARAM);
+
+        dsVideoPortGetResolutionParam_t param;
+
+    param.handle = handle;
+    param.toPersist = false;
+    param.resolution = *resolution;
+
+        IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+        rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                                                        (char *)IARM_BUS_DSMGR_API_dsGetPlatformResolution,
+                                                        (void *)&param,
+                                                        sizeof(param));
+
+        *resolution = param.resolution;
+
+        if (IARM_RESULT_SUCCESS == rpcRet)
+        {
+                return dsERR_NONE;
+        }
+        return dsERR_GENERAL ;
+}
 
 dsError_t  dsGetResolution(int handle, dsVideoPortResolution_t *resolution)
 {

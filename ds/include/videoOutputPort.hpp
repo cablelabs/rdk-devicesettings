@@ -232,6 +232,7 @@ public:
 
 	AudioOutputPort &getAudioOutputPort();
 	const VideoResolution &getResolution() ;
+	const VideoResolution &getPlatformResolution() ;
 	const VideoResolution &getDefaultResolution() const;
 
     	const VideoOutputPort::Display &getDisplay();

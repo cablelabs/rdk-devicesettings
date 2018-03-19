@@ -213,6 +213,25 @@ const VideoResolution & VideoOutputPort::getResolution()
 	return VideoResolution::getInstance(_resolution);
 }
 
+/**
+ * @fn  const VideoResolution & VideoOutputPort::getPlatformResolution()
+ * @brief This API is used to get the plarform video resolution output from the video output port.
+ *
+ * @return Reference to the output resolution
+ */
+const VideoResolution & VideoOutputPort::getPlatformResolution()
+{
+        dsVideoPortResolution_t resolution;
+        memset(resolution.name,'\0',sizeof(resolution.name));
+
+        dsGetPlatformResolution(_handle,&resolution);
+
+        /*Copy onto Temp - Safe*/
+        std::string temp( resolution.name,strlen(resolution.name));
+        _resolution = string(temp);
+
+        return VideoResolution::getInstance(_resolution);
+}
 
 /**
  * @fn  const VideoOutputPort::getDefaultResolution() const

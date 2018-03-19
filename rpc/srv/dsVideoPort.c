@@ -75,6 +75,7 @@ IARM_Result_t _dsGetSurroundMode(void *arg);
 IARM_Result_t _dsEnableVideoPort(void *arg);
 IARM_Result_t _dsSetResolution(void *arg);
 IARM_Result_t _dsGetResolution(void *arg);
+IARM_Result_t _dsGetPlatformResolution(void *arg);
 IARM_Result_t _dsVideoPortTerm(void *arg);
 IARM_Result_t _dsEnableHDCP(void *arg);
 IARM_Result_t _dsIsHDCPEnabled(void *arg);
@@ -184,6 +185,7 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableVideoPort,_dsEnableVideoPort);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetResolution,_dsSetResolution);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetResolution,_dsGetResolution);
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetPlatformResolution,_dsGetPlatformResolution);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsVideoPortTerm,_dsVideoPortTerm);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableHDCP ,_dsEnableHDCP);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsHDCPEnabled,_dsIsHDCPEnabled);
@@ -403,6 +405,24 @@ IARM_Result_t _dsEnableVideoPort(void *arg)
     IARM_BUS_Unlock(lock);
 	
 	return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsGetPlatformResolution(void *arg)
+{
+    _DEBUG_ENTER();
+
+        IARM_BUS_Lock(lock);
+
+
+        std::string _Resolution("720p");
+        dsVideoPortGetResolutionParam_t *param = (dsVideoPortGetResolutionParam_t *)arg;
+
+        dsGetResolution(param->handle,&param->resolution);
+        __TIMESTAMP();printf(" Platform Resolution - %s\r\n",param->resolution.name);
+
+        IARM_BUS_Unlock(lock);
+
+        return IARM_RESULT_SUCCESS;
 }
 
 IARM_Result_t _dsGetResolution(void *arg)

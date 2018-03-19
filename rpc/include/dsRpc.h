@@ -101,6 +101,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsEnableVideoPort		 "dsEnableVideoPort"
 #define IARM_BUS_DSMGR_API_dsSetResolution			"dsSetResolution"
 #define IARM_BUS_DSMGR_API_dsGetResolution			"dsGetResolution"
+#define IARM_BUS_DSMGR_API_dsGetPlatformResolution		"dsGetPlatformResolution"
 #define IARM_BUS_DSMGR_API_dsVideoPortTerm			"dsVideoPortTerm"
 #define IARM_BUS_DSMGR_API_dsEnableHDCP    		"dsEnableHDCP"
 #define IARM_BUS_DSMGR_API_dsIsHDCPEnabled    		"dsIsHDCPEnabled"

@@ -235,6 +235,20 @@ dsError_t  dsEnableVideoPort(int handle, bool enabled);
 dsError_t  dsSetResolution(int handle, dsVideoPortResolution_t *resolution);
 
 /**
+ * @brief Get the video display platform resolution.
+ *
+ * This function Gets the platform resolution.
+ *
+ * @param [in] handle         Handle of the video output port.
+ * @param [in] *resolution    The address of a structure containing the video output port
+ *                            resolution settings.
+ * @return Device Settings error code
+ * @retval dsERR_NONE If sucessfully dsGetPlatformResolution api has been called using IARM support.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsGetPlatformResolution(int handle, dsVideoPortResolution_t *resolution);
+
+/**
  * @brief Get the video display resolution.
  *
  * This function Gets the resolution for the video corresponding to the specified port and index.
