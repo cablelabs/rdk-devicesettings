@@ -446,8 +446,10 @@ uint32_t FrontPanelIndicator::getColor()
 {
 	dsFPDColor_t color;
 
-	dsGetFPColor((dsFPDIndicator_t)_id,&color);
-
+        if (dsERR_NONE != dsGetFPColor((dsFPDIndicator_t)_id,&color) )
+        {
+            throw IllegalArgumentException();
+        }
 	_color_rgb32 = color;
 
 	return _color_rgb32;
@@ -467,7 +469,10 @@ void FrontPanelIndicator::setColor(const FrontPanelIndicator::Color & color,bool
 {
    
     bool IsPersist = toPersist;
-    dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color.getId(),IsPersist);
+    if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color.getId(),IsPersist) )
+    {
+        throw IllegalArgumentException();
+    }
 	_color_rgb32 = (dsFPDColor_t) color.getId();
 	//std::cout << "_color_rgb32 = " << _color_rgb32 << std::endl;
 }
@@ -485,7 +490,10 @@ void FrontPanelIndicator::setColor(const FrontPanelIndicator::Color & color,bool
 void FrontPanelIndicator::setColor(uint32_t color,bool toPersist)
 {
     bool IsPersist = toPersist;
-    dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color,IsPersist);
+    if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color,IsPersist) )
+    {
+        throw IllegalArgumentException();
+    }
 	_color_rgb32 = (dsFPDColor_t) color;
     //std::cout << "UINT _color_rgb32 = " << _color_rgb32 << std::endl;
 }

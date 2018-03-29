@@ -513,10 +513,12 @@ IARM_Result_t _dsGetFPColor(void *arg)
 IARM_Result_t _dsSetFPColor(void *arg)
 {
     _DEBUG_ENTER();
+    IARM_Result_t ret = IARM_RESULT_SUCCESS;
     IARM_BUS_Lock(lock);
-
 	dsFPDColorParam_t *param = (dsFPDColorParam_t *)arg;
-    dsSetFPColor(param->eIndicator, param->eColor);
+    dsError_t dsStatus = dsSetFPColor(param->eIndicator, param->eColor);
+    if(dsStatus == dsERR_NONE)
+    {
     _dsPowerLedColor[param->eIndicator] = param->eColor;
     INFO("_dsSetFPColor Value  From  App is %d for Indicator %d \r\n",param->eColor,param->eIndicator);
     try{
@@ -544,8 +546,14 @@ IARM_Result_t _dsSetFPColor(void *arg)
 		{
 			ERROR("Error in Persisting the Color  Value \r\n");
 		}
+    }
+    else
+    {
+       ERROR("Error in dsSetFPColor dsStatus:%d \r\n",dsStatus);
+       ret = IARM_RESULT_INVALID_PARAM;
+    }
     IARM_BUS_Unlock(lock);
-	return IARM_RESULT_SUCCESS;
+	return ret;
 }
 
 
