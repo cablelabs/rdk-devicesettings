@@ -94,7 +94,7 @@ IARM_Result_t _dsGetTVHDRCapabilities(void *arg);
 IARM_Result_t _dsSupportedTvResolutions(void *arg);
 IARM_Result_t _dsSetForceDisable4K(void *arg);
 IARM_Result_t _dsGetForceDisable4K(void *arg);
-
+IARM_Result_t _dsSetScartParameter(void *arg);
 
 static dsVideoPortType_t _GetVideoPortType(int handle);
 static int  _dsVideoPortPreResolutionCall(dsVideoPortResolution_t *resolution);
@@ -205,6 +205,7 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedTVResolution,_dsSupportedTvResolutions);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetForceDisable4K, _dsSetForceDisable4K); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetForceDisable4K, _dsGetForceDisable4K); 
+        IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetScartParameter,_dsSetScartParameter);
 	
         m_isInitialized = 1;
     }
@@ -264,6 +265,11 @@ IARM_Result_t _dsIsVideoPortActive(void *arg)
 	{
 		param->active = true;
         param->result =  dsERR_NONE;
+	}
+	else if (_VPortType == dsVIDEOPORT_TYPE_SCART)
+	{
+		param->active = true;
+		param->result = dsERR_NONE;
 	}
 
     IARM_BUS_Unlock(lock);
@@ -1174,6 +1180,46 @@ IARM_Result_t _dsGetForceDisable4K(void *arg)
 
 	param->disable = force_disable_4K;
     IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsSetScartParameter(void *arg)
+{
+    dsScartParamParam_t *param = (dsScartParamParam_t *)arg;
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    printf("dsSRV::_dsSetScartParameter\r\n");
+
+    typedef dsError_t (*dsScartParamFunc_t)(int handle, const char* parameter_str, const char* value_str);
+    static dsScartParamFunc_t func = NULL;
+    if (func == NULL) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib != NULL) {
+            func = (dsScartParamFunc_t) dlsym(dllib, "dsSetScartParameter");
+            if (func != NULL) {
+                printf("dsSRV: dsSetScartParameter(int,const char*,const char*) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsSRV: dsSetScartParameter(int,const char*,const char*) is not defined\r\n");
+                dlclose(dllib);
+            }
+        }
+        else {
+            printf("dsSRV: Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
+    if (param != NULL) {
+        param->result = dsERR_GENERAL;
+
+        if (func != NULL) {
+            param->result = func(param->handle, param->param_bytes, param->value_bytes);
+        }
+    }
+
+    IARM_BUS_Unlock(lock);
+
     return IARM_RESULT_SUCCESS;
 }
 
