@@ -410,6 +410,32 @@ dsError_t dsSupportedTvResolutions(int handle, int *resolutions);
 dsError_t dsSetForceDisable4KSupport(int handle, bool disable);
 dsError_t dsGetForceDisable4KSupport(int handle, bool *disable);
 
+ /**
+ * @brief Sets various SCART parameters
+ *
+ * Supported values:
+ * parameter_str  value_str
+ * "aspect_ratio" "4x3", 16x9"
+ * "tv_startup"   "on", "off"
+ * "tv_startup"   "on", "off"
+ * "rgb"          "on" (disables cvbs)
+ * "cvbs"         "on" (disables rgb)
+ * "macrovision", "*"  (not implemented)
+ * "cgms",        "disabled"
+ * "cgms",        "copyNever"
+ * "cgms",        "copyOnce"
+ * "cgms",        "copyFreely"
+ * "cgms",        "copyNoMore"
+ * "port"         "on", "off"
+ *
+ * @param[in] parameter_str - a name of parameter
+ * @param[in] value_str - a value of parameter
+ * @retval dsERR_NONE on success
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t dsSetScartParameter(int handle, const char* parameter_str, const char* value_str);
+
+
 /**
  * @}
  */

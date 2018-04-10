@@ -149,7 +149,11 @@ VideoOutputPort::VideoOutputPort(const int type, const int index, const int id, 
 	else {
 		throw IllegalArgumentException();
 	}
+}
 
+bool VideoOutputPort::setScartParameter(const std::string parameter, const std::string value)
+{
+	return dsSetScartParameter(_handle, parameter.c_str(), value.c_str()) == dsERR_NONE;
 }
 
 

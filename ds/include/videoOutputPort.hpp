@@ -262,7 +262,7 @@ public:
 	void getTVHDRCapabilities(int *capabilities) const;
 	void getSupportedTvResolutions(int *resolutions) const;
 	int forceDisable4KSupport(bool disable);
-
+	bool setScartParameter(const std::string parameter, const std::string value);
 
 private:
 	Display _display;
