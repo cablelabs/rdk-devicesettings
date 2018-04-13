@@ -39,6 +39,7 @@
 #include "frontPanelIndicator.hpp"
 #include "frontPanelConfig.hpp"
 #include "illegalArgumentException.hpp"
+#include "unsupportedOperationException.hpp"
 #include "host.hpp"
 
 #include "dslogger.h"
@@ -469,6 +470,27 @@ void FrontPanelIndicator::setColor(const FrontPanelIndicator::Color & color,bool
 {
    
     bool IsPersist = toPersist;
+    if(_colorMode == 0 || _colorMode == 1)
+    {
+        throw UnsupportedOperationException("This API not supported for the color mode");
+    }
+    else if(_colorMode == 2)
+    {
+        bool isValidColor = false;
+        const List<FrontPanelIndicator::Color> supportedColors = FrontPanelConfig::getInstance().getColors();
+        for (uint j = 0; j < supportedColors.size(); j++)
+        {
+            if( supportedColors.at(j).getId() == color.getId())
+            {
+               isValidColor = true;
+               break;
+            }
+        }
+        if(!isValidColor)
+        {
+           throw IllegalArgumentException();
+        }
+    }
     if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color.getId(),IsPersist) )
     {
         throw IllegalArgumentException();
@@ -490,6 +512,11 @@ void FrontPanelIndicator::setColor(const FrontPanelIndicator::Color & color,bool
 void FrontPanelIndicator::setColor(uint32_t color,bool toPersist)
 {
     bool IsPersist = toPersist;
+    bool isValidColor = false;
+    if(_colorMode == 0 || _colorMode == 2)
+    {
+        throw UnsupportedOperationException("This API not supported for the color mode");
+    }
     if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color,IsPersist) )
     {
         throw IllegalArgumentException();
