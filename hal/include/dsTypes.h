@@ -149,15 +149,7 @@
 #include <sys/types.h>
 #include <stdint.h>
                 
-/** @cond */
-#ifndef __cplusplus
-#ifndef bool
-typedef int32_t bool;
-#endif
-#define true 1
-#define false 0
-#endif
-/** @endcond */
+#include <stdbool.h>
 
 /** @addtogroup DSHAL_AUDIO Device Settings HAL Audio Types
  *  @{
