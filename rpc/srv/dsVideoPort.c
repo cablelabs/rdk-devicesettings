@@ -78,6 +78,7 @@ IARM_Result_t _dsIsDisplayConnected(void *arg);
 IARM_Result_t _dsIsDisplaySurround(void *arg);
 IARM_Result_t _dsGetSurroundMode(void *arg);
 IARM_Result_t _dsEnableVideoPort(void *arg);
+IARM_Result_t _dsEnableAllVideoPort(void *arg);
 IARM_Result_t _dsSetResolution(void *arg);
 IARM_Result_t _dsGetResolution(void *arg);
 IARM_Result_t _dsGetPlatformResolution(void *arg);
@@ -188,6 +189,7 @@ IARM_Result_t _dsVideoPortInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsIsDisplaySurround,_dsIsDisplaySurround);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSurroundMode,_dsGetSurroundMode);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableVideoPort,_dsEnableVideoPort);
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableAllVideoPort,_dsEnableAllVideoPort);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetResolution,_dsSetResolution);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetResolution,_dsGetResolution);
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetPlatformResolution,_dsGetPlatformResolution);
@@ -410,6 +412,19 @@ IARM_Result_t _dsEnableVideoPort(void *arg)
     IARM_BUS_Unlock(lock);
 	
 	return IARM_RESULT_SUCCESS;
+}
+
+IARM_Result_t _dsEnableAllVideoPort(void *arg)
+{
+    _DEBUG_ENTER();
+    IARM_BUS_Lock(lock);
+
+    bool enabled= *((bool *)arg);
+    dsEnableAllVideoPort(enabled);
+
+    IARM_BUS_Unlock(lock);
+
+    return IARM_RESULT_SUCCESS;
 }
 
 IARM_Result_t _dsGetPlatformResolution(void *arg)

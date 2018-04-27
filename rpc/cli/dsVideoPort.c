@@ -607,5 +607,27 @@ dsError_t dsGetForceDisable4KSupport(int handle, bool *disable)
 
 	return dsERR_GENERAL ;
 }
+
+dsError_t dsEnableAllVideoPort(bool enabled)
+{
+    _DEBUG_ENTER();
+
+
+    IARM_Result_t rpcRet = IARM_RESULT_SUCCESS;
+
+
+    rpcRet = IARM_Bus_Call(IARM_BUS_DSMGR_NAME,
+                (char *)IARM_BUS_DSMGR_API_dsEnableAllVideoPort,
+                (void *)&enabled,
+                sizeof(enabled));
+
+    if (IARM_RESULT_SUCCESS != rpcRet)
+    {
+        return dsERR_GENERAL ;
+    }
+
+    return dsERR_NONE;
+}
+
 /** @} */
 /** @} */

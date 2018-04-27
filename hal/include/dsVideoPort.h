@@ -220,6 +220,19 @@ dsError_t  dsIsHDCPEnabled (int handle, bool* pContentProtected);
  */
 dsError_t  dsEnableVideoPort(int handle, bool enabled);
 
+ /**
+ * @brief Enable/disable all video port.
+ *
+ * This function enables or disables the all video port.
+ *
+ * @param [in] enabled     Flag to control the video port state
+ *                         (@a true to enable, @a false to disable)
+ * @return Device Settings error code
+ * @retval dsERR_NONE If sucessfully dsEnableAllVideoPort api has been called using IARM support.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsEnableAllVideoPort(bool enabled);
+
 /**
  * @brief Set video port's display resolution.
  *

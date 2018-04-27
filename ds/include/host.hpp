@@ -78,6 +78,7 @@ public:
     List<VideoOutputPort> getVideoOutputPorts();
     List<AudioOutputPort> getAudioOutputPorts();
     List<VideoDevice> getVideoDevices();
+    void enableAllVideoPorts(bool enabled);
     VideoOutputPort &getVideoOutputPort(const std::string &name);
     VideoOutputPort &getVideoOutputPort(int handle);
     AudioOutputPort &getAudioOutputPort(const std::string &name);

@@ -271,6 +271,17 @@ namespace device
       throw UnsupportedOperationException();
     }
 
+/**
+ * @fn voidHost::enableAllVideoPorts(bool)
+ * @brief This API is used to enable/disable all video ports.
+ *
+ * @return None
+ */
+    void Host::enableAllVideoPorts(bool enabled)
+    {
+      dsEnableAllVideoPort(enabled);
+    }
+
 
 /**
  * @fn List<VideoOutputPort>  Host::getVideoOutputPorts()

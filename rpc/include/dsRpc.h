@@ -99,6 +99,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsIsDisplaySurround 		 "dsIsDisplaySurround"
 #define IARM_BUS_DSMGR_API_dsGetSurroundMode 		 "dsGetSurroundMode"  
 #define IARM_BUS_DSMGR_API_dsEnableVideoPort		 "dsEnableVideoPort"
+#define IARM_BUS_DSMGR_API_dsEnableAllVideoPort		 "dsEnableAllVideoPort"
 #define IARM_BUS_DSMGR_API_dsSetResolution			"dsSetResolution"
 #define IARM_BUS_DSMGR_API_dsGetResolution			"dsGetResolution"
 #define IARM_BUS_DSMGR_API_dsGetPlatformResolution		"dsGetPlatformResolution"
