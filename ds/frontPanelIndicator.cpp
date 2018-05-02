@@ -169,7 +169,7 @@ const FrontPanelIndicator::Color & FrontPanelIndicator::Color::getInstance(const
 	for (size_t i = 0; i < dsUTL_DIM(_colorNames); i++) {
 		if (name.compare(_colorNames[i]) == 0) {
 			/* TBD - revisit this change */
-			static device::FrontPanelIndicator::Color c(_colorsValues[i]);
+			static device::FrontPanelIndicator::Color c(i);
 			return c;
 		}
 	}
@@ -491,11 +491,12 @@ void FrontPanelIndicator::setColor(const FrontPanelIndicator::Color & color,bool
            throw IllegalArgumentException();
         }
     }
-    if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t) color.getId(),IsPersist) )
+    dsFPDColor_t colorValue = _colorsValues[color.getId()];
+    if (dsERR_NONE != dsSetFPDColor((dsFPDIndicator_t)_id, (dsFPDColor_t)colorValue,IsPersist) )
     {
         throw IllegalArgumentException();
     }
-	_color_rgb32 = (dsFPDColor_t) color.getId();
+	_color_rgb32 = colorValue;
 	//std::cout << "_color_rgb32 = " << _color_rgb32 << std::endl;
 }
 
