@@ -120,6 +120,7 @@ extern "C" {
 #define IARM_BUS_DSMGR_API_dsSetForceDisable4K "dsSetForceDisable4K"
 #define IARM_BUS_DSMGR_API_dsGetForceDisable4K "dsGetForceDisable4K"
 #define IARM_BUS_DSMGR_API_dsSetScartParameter     "dsSetScartParameter"
+#define IARM_BUS_DSMGR_API_dsEnableHDRDVSupport "dsEnableHDRDVSupport"
 
 /*
  * Declare RPC FP  API names
@@ -478,6 +479,13 @@ typedef struct
 	int handle;
 	bool disable;
 } dsForceDisable4KParam_t;
+  
+typedef struct
+{
+        dsError_t result;
+        int handle;
+        bool enable;
+} dsEnableHDRDVSupportParam_t;  
 
 #define DSSCART_PARAM_LEN_MAX 1024
 #define DSSCART_VALUE_LEN_MAX 1024
@@ -488,7 +496,7 @@ typedef struct _dsScartParamParam_t {
     char param_bytes[DSSCART_PARAM_LEN_MAX];
     char value_bytes[DSSCART_VALUE_LEN_MAX];
 } dsScartParamParam_t;
-
+  
 #ifdef __cplusplus
 }
 #endif

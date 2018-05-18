@@ -66,7 +66,7 @@ static std::string _dsHDMIResolution(DEFAULT_RESOLUTION);
 static std::string _dsCompResolution(DEFAULT_RESOLUTION);
 static dsHdcpStatus_t _hdcpStatus = dsHDCP_STATUS_UNAUTHENTICATED;
 static bool force_disable_4K = false;
-
+extern bool enableHDRDVStatus;
 #define NULL_HANDLE 0
 #define IARM_BUS_Lock(lock) pthread_mutex_lock(&dsLock)
 #define IARM_BUS_Unlock(lock) pthread_mutex_unlock(&dsLock)
@@ -919,6 +919,11 @@ IARM_Result_t _dsGetTVHDRCapabilities(void *arg)
     dsGetHDRCapabilitiesParam_t *param = (dsGetHDRCapabilitiesParam_t *)arg;
     if(0 != func) {
         param->result = func(param->handle, &param->capabilities);
+        if((param->capabilities & dsHDRSTANDARD_DolbyVision) && (enableHDRDVStatus == false))
+        {
+            param->capabilities &= ~dsHDRSTANDARD_DolbyVision;
+            printf("_dsGetTVHDRCapabilities() DolbyVision Disabled param->capabilities:%x\r\n",param->capabilities);
+        }
     }
     else {
         param->capabilities = dsHDRSTANDARD_NONE;

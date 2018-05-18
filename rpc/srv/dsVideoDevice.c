@@ -55,6 +55,7 @@ static int m_isPlatInitialized = 0;
 static pthread_mutex_t dsLock = PTHREAD_MUTEX_INITIALIZER;
 static dsVideoZoom_t srv_dfc = dsVIDEO_ZOOM_FULL;
 static bool force_disable_hdr = true;
+bool enableHDRDVStatus = false;
 
 #define IARM_BUS_Lock(lock) pthread_mutex_lock(&dsLock)
 #define IARM_BUS_Unlock(lock) pthread_mutex_unlock(&dsLock)
@@ -68,6 +69,7 @@ IARM_Result_t _dsGetHDRCapabilities(void *arg);
 IARM_Result_t _dsGetSupportedVideoCodingFormats(void *arg);
 IARM_Result_t _dsGetVideoCodecInfo(void *arg);
 IARM_Result_t _dsForceDisableHDR(void *arg);
+IARM_Result_t _dsEnableHDRDVSupport(void *arg);
 
 IARM_Result_t dsVideoDeviceMgr_init()
 {
@@ -111,6 +113,28 @@ IARM_Result_t dsVideoDeviceMgr_init()
 		printf("Exception in getting force-disable-HDR setting at start up.\r\n");
 	}
 
+        try
+        {
+                std::string _hdr_dv_setting("false");
+                _hdr_dv_setting = device::HostPersistence::getInstance().getProperty("HDR.DV", _hdr_dv_setting);
+                if (_hdr_dv_setting.compare("false") == 0)
+                {
+                        enableHDRDVStatus = false;
+                        printf("HDR DV support is disabled.\n");
+                }
+                else
+                {
+                        enableHDRDVStatus = true;
+                        printf("HDR DV support is enabled.\n");
+                }
+
+        }
+        catch(...)
+        {
+                printf("Exception in getting HDR DV setting at start up.\r\n");
+        }
+
+
     if (!m_isPlatInitialized) {
     	dsVideoDeviceInit();
     }
@@ -139,6 +163,7 @@ IARM_Result_t _dsVideoDeviceInit(void *arg)
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetSupportedVideoCodingFormats, _dsGetSupportedVideoCodingFormats); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsGetVideoCodecInfo, _dsGetVideoCodecInfo); 
 		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsSetForceDisableHDR, _dsForceDisableHDR); 
+		IARM_Bus_RegisterCall(IARM_BUS_DSMGR_API_dsEnableHDRDVSupport, _dsEnableHDRDVSupport);
         m_isInitialized = 1;
     }
 
@@ -298,6 +323,11 @@ IARM_Result_t _dsGetHDRCapabilities(void *arg)
     dsGetHDRCapabilitiesParam_t *param = (dsGetHDRCapabilitiesParam_t *)arg;
     if((0 != func) && (false == force_disable_hdr)) {
         param->result = func(param->handle, &param->capabilities);
+        if((param->capabilities & dsHDRSTANDARD_DolbyVision) && (enableHDRDVStatus == false))
+        {
+            param->capabilities &= ~dsHDRSTANDARD_DolbyVision;
+            printf("dsGetHDRCapabilities() DolbyVision Disabled param->capabilities:%x\r\n",param->capabilities);
+        }
     }
     else {
         param->capabilities = dsHDRSTANDARD_NONE;
@@ -402,5 +432,32 @@ IARM_Result_t _dsForceDisableHDR(void *arg)
     IARM_BUS_Unlock(lock);
     return IARM_RESULT_SUCCESS;
 }
+
+
+IARM_Result_t _dsEnableHDRDVSupport(void *arg)
+{
+    _DEBUG_ENTER();
+
+    IARM_BUS_Lock(lock);
+
+    dsEnableHDRDVSupportParam_t *param = (dsEnableHDRDVSupportParam_t *)arg;
+        param->result = dsERR_NONE;
+
+        enableHDRDVStatus = param->enable;
+        if(enableHDRDVStatus)
+        {
+                printf("enableHDRDVStatus persist true\n");
+                device::HostPersistence::getInstance().persistHostProperty("HDR.DV","true");
+        }
+        else
+        {
+                printf("enableHDRDVStatus persist false \n");
+                device::HostPersistence::getInstance().persistHostProperty("HDR.DV","false");
+        }
+
+    IARM_BUS_Unlock(lock);
+    return IARM_RESULT_SUCCESS;
+}
+
 /** @} */
 /** @} */
