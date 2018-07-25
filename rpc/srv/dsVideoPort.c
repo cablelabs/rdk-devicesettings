@@ -425,8 +425,30 @@ IARM_Result_t _dsEnableAllVideoPort(void *arg)
     _DEBUG_ENTER();
     IARM_BUS_Lock(lock);
 
+    printf("dsSRV _dsEnableAllVideoPort \n");
+    typedef dsError_t (*dsEnableAllVideoPort_t)(bool enabled);
+    static dsEnableAllVideoPort_t func = 0;
+    if (func == 0) {
+        void *dllib = dlopen(RDK_DSHAL_NAME, RTLD_LAZY);
+        if (dllib) {
+            func = (dsEnableAllVideoPort_t) dlsym(dllib, "dsEnableAllVideoPort");
+            if (func) {
+                printf("dsEnableAllVideoPort_t(bool enabled) is defined and loaded\r\n");
+            }
+            else {
+                printf("dsEnableAllVideoPort_t(bool enabled) is not defined\r\n");
+            }
+            dlclose(dllib);
+        }
+        else {
+            printf("Opening RDK_DSHAL_NAME [%s] failed\r\n", RDK_DSHAL_NAME);
+        }
+    }
+
     bool enabled= *((bool *)arg);
-    dsEnableAllVideoPort(enabled);
+    if (func != 0) {
+        dsError_t ret = func(enabled);
+    }
 
     IARM_BUS_Unlock(lock);
 
